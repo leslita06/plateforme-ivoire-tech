@@ -5,6 +5,11 @@ data/
 # Configuration locale, qui porte la clé de signature
 .env
 
+# Brouillons de messages : ils vivent ici pour le travail, ils n'ont rien à faire
+# dans un dépôt public
+whatsapp_*.txt
+message_*.txt
+
 # Sorties de travail
 captures/
 apercu.pdf
