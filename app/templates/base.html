@@ -4,14 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block titre %}{{ NOM }}{% endblock %}</title>
+<link rel="icon" type="image/png" href="/static/logos/favicon.png">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 {% include "_icones.html" %}
+{# La bande de marques, sur fond clair : les logos officiels sont verts et orange sur
+   blanc, les poser sur le vert de l'en-tête obligerait à les recolorer. #}
+<div class="bandeau-marques">
+  <a href="/" class="marque-ministere"><img src="/static/logos/ministere.png" alt="Ministère de la Transition Numérique et de l'Innovation Technologique"></a>
+  <div class="marques-programmes">
+    <img class="logo-next15" src="/static/logos/next15.png" alt="Ivoire Tech Next 15">
+    <img class="logo-scaleup" src="/static/logos/scaleup.png" alt="Ivoire Tech Scale Up">
+  </div>
+</div>
 <header class="entete">
   <a class="marque" href="/">
-    <span class="marque-pastille">IT</span>
-    <span><strong>{{ NOM }}</strong><small>Ministère de la Transition Numérique et de l'Innovation Technologique</small></span>
+    <span><strong>{{ NOM }}</strong><small>L'espace des lauréates, des partenaires et des investisseurs</small></span>
   </a>
   {% set chemin = request.url.path %}
   <nav class="nav">
@@ -70,8 +79,15 @@
 {% block contenu %}{% endblock %}
 </main>
 <footer class="pied">
-  <span>{{ NOM }} · programmes Ivoire Tech Next 15 et Ivoire Tech Scale Up</span>
-  <span>Une plateforme du Ministère de la Transition Numérique et de l'Innovation Technologique</span>
+  <div class="pied-marques">
+    <img src="/static/logos/ministere.png" alt="Ministère de la Transition Numérique et de l'Innovation Technologique">
+    <img class="logo-next15" src="/static/logos/next15.png" alt="Ivoire Tech Next 15">
+    <img class="logo-scaleup" src="/static/logos/scaleup.png" alt="Ivoire Tech Scale Up">
+  </div>
+  <div class="pied-texte">
+    <span>{{ NOM }}, programmes Ivoire Tech Next 15 et Ivoire Tech Scale Up</span>
+    <span>Une plateforme du Ministère de la Transition Numérique et de l'Innovation Technologique</span>
+  </div>
 </footer>
 </body>
 </html>

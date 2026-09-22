@@ -45,6 +45,11 @@ def image64(nom):
         return base64.b64encode(fh.read()).decode()
 
 
+def logo64(nom):
+    with open(os.path.join(ICI, "app", "static", "logos", nom + ".png"), "rb") as fh:
+        return base64.b64encode(fh.read()).decode()
+
+
 def dimensions(nom):
     """Une capture plein écran est très haute : la borner par la HAUTEUR quand la largeur
     ne mord pas la première, sinon elle déborde sur une seconde page (ERRORS 31)."""
@@ -80,10 +85,20 @@ li { margin-bottom: 1.2mm; }
 .ecran h2, .ecran .legende { text-align: left; }
 .legende { color: #4a5a54; margin: 0 0 3mm; }
 img { border: 0.3mm solid #dcd5c8; border-radius: 1.5mm; }
+.marques { display: flex; align-items: center; justify-content: space-between; margin: 0 0 7mm; }
+.marques img { display: inline-block; vertical-align: middle; }
+.m-ministere { height: 13mm; }
+.m-next15 { height: 7mm; margin-right: 7mm; }
+.m-scaleup { height: 12mm; }
 .pied { position: fixed; bottom: 0; left: 0; right: 0; color: #8c968f; font-size: 7.5pt; }
 </style></head><body>
-<div class="pied">Plateforme d'accompagnement Ivoire Tech, Mstudio pour le Ministère de la Transition Numérique et de l'Innovation Technologique</div>
+<div class="pied">Plateforme d'accompagnement Ivoire Tech, Ministère de la Transition Numérique et de l'Innovation Technologique</div>
 
+<div class="marques">
+  <img class="m-ministere" src="data:image/png;base64,%(ministere)s">
+  <span><img class="m-next15" src="data:image/png;base64,%(next15)s">
+  <img class="m-scaleup" src="data:image/png;base64,%(scaleup)s"></span>
+</div>
 <h1>Plateforme d'accompagnement Ivoire Tech</h1>
 <p class="chapeau">L'espace commun des startups Next 15, des PME Scale Up, des partenaires et des investisseurs.</p>
 
@@ -118,7 +133,8 @@ img { border: 0.3mm solid #dcd5c8; border-radius: 1.5mm; }
 </div>
 
 %(pages)s
-</body></html>""" % {"vert": VERT, "orange": ORANGE, "creme": CREME, "pages": "\n".join(pages)}
+</body></html>""" % {"vert": VERT, "orange": ORANGE, "creme": CREME, "pages": "\n".join(pages),
+     "ministere": logo64("ministere"), "next15": logo64("next15"), "scaleup": logo64("scaleup")}
 
     HTML(string=html, base_url=ICI).write_pdf(SORTIE)
     print("%s  %d Ko" % (SORTIE, os.path.getsize(SORTIE) // 1024))

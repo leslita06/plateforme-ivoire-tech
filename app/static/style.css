@@ -121,3 +121,31 @@ form.formulaire.large { max-width: none; }
 .etape strong { display: block; font-size: 14px; }
 .etape small { color: var(--gris); }
 .ic.carte { width: 20px; height: 20px; color: var(--orange); margin-right: 8px; vertical-align: -4px; }
+
+/* ── Bande de marques : les logos officiels, sur le fond clair qui leur va ──
+   Ministère à gauche, les deux programmes à droite. Présente sur chaque page. */
+.bandeau-marques { display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  flex-wrap: wrap; padding: 12px 24px; background: var(--blanc); border-bottom: 1px solid var(--ligne); }
+.marque-ministere img { height: 42px; width: auto; display: block; }
+.marques-programmes { display: flex; align-items: center; gap: 22px; }
+.marques-programmes img { width: auto; display: block; }
+.marques-programmes .logo-next15 { height: 24px; }
+.marques-programmes .logo-scaleup { height: 44px; }
+.marques-programmes img + img { border-left: 1px solid var(--ligne); padding-left: 22px; }
+.marque strong { font-size: 17px; }
+
+.pied { align-items: center; }
+.pied-marques { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.pied-marques img { width: auto; opacity: .85; height: 22px; }
+.pied-marques .logo-scaleup { height: 40px; }
+.pied-marques img:first-child { height: 34px; }
+.pied-texte { display: flex; flex-direction: column; gap: 2px; text-align: right; }
+@media (max-width: 720px) {
+  .bandeau-marques { padding: 8px 16px; gap: 10px; }
+  .marque-ministere img { height: 32px; }
+  .marques-programmes { gap: 12px; }
+  .marques-programmes .logo-next15 { height: 18px; }
+  .marques-programmes .logo-scaleup { height: 32px; }
+  .marques-programmes img + img { padding-left: 12px; }
+  .pied-texte { text-align: left; }
+}
