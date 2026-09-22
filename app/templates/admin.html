@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block titre %}Administration · {{ NOM }}{% endblock %}
 {% block contenu %}
-<h1>Administration</h1>
+<h1>{{ ic('administration', 'titre') }}Administration</h1>
 <div class="grille trois">
   <div class="carte"><div class="chiffre">{{ stats.startup + stats.pme }}</div><div>entreprises validées ({{ stats.startup }} startups, {{ stats.pme }} PME)</div></div>
   <div class="carte"><div class="chiffre">{{ stats.partenaire }}</div><div>partenaires validés · {{ stats.offres }} offres publiées</div></div>

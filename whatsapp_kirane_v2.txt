@@ -1,0 +1,33 @@
+👋 Salut Kirane,
+
+🚀 On a commencé la *plateforme d'accompagnement Ivoire Tech*.
+
+C'est l'espace où les startups Next 15 et les PME Scale Up retrouvent les offres des partenaires, déposent leurs documents et rencontrent les investisseurs.
+
+💻 Le code, avec le mode d'emploi d'installation :
+https://github.com/leslita06/plateforme-ivoire-tech
+
+*Ce qu'on y fait*
+
+👤 Chacun crée son compte, et le Ministère le valide avant de lui ouvrir l'accès
+
+🎁 Les partenaires publient leurs offres, les entreprises les demandent en un clic
+
+📁 Les documents se déposent et se versionnent, et l'entreprise choisit qui les voit
+
+🤝 Les investisseurs voient les entreprises classées par correspondance, avec le score expliqué
+
+🏛️ Le Ministère valide les comptes, modère les offres, lit le journal et exporte tout
+
+⚙️ Elle est faite pour être hébergée sur les serveurs de l'État : une appli autonome, quatre dépendances, une base dans un fichier, et une sauvegarde qui tient dans la copie d'un dossier.
+
+📄 Le PDF juste au-dessus te montre tous les écrans.
+
+🔑 *Les accès de la démo*
+Ministère : admin@ivoire.tech
+Startup : awa@jeko.africa
+Mot de passe : Demo-2026-ivoire
+
+⚠️ La démo tourne encore sur un réseau privé, donc le lien ne s'ouvrira pas de ton côté. Dis-moi si tu veux cliquer dedans et je te la rends accessible.
+
+Leslie

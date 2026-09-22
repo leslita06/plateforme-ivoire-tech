@@ -93,6 +93,14 @@ assert "Présentation" in html and "v1" in html
 r = n.o.open(urllib.request.Request(BASE + "/documents/deposer", data=corps, headers={"Content-Type": "multipart/form-data; boundary=" + frontiere}))
 assert "v2" in r.read().decode(), "le second dépôt sous le même nom doit faire une v2"
 ok("dépôt, puis nouvelle version du même document")
+n.get("/documents")
+url, _ = n.post("/documents/lien", csrf=n.csrf(), lien="https://docs.google.com/document/d/exemple/edit",
+                nom="Business plan vivant", categorie="business_plan", visibilite="investisseurs")
+assert url.endswith("/documents?m=lien_ajoute"), url
+assert "Business plan vivant" in n.get("/documents") and "docs.google.com" in n.dernier
+url, _ = n.post("/documents/lien", csrf=n.csrf(), lien="pas une adresse", nom="Raté")
+assert url.endswith("m=lien_invalide"), "une adresse invalide doit être refusée (%s)" % url
+ok("lien ajouté comme ressource, adresse invalide refusée")
 
 print("== administration : validation")
 a = Nav().connexion("admin@ivoire.tech")

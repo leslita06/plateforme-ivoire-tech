@@ -40,6 +40,11 @@ partenaires, ou toutes les organisations validées. Un dépôt sous un nom déj�
 une **version** supplémentaire au lieu d'écraser la précédente, et l'historique reste
 consultable. Formats acceptés : pdf, pptx, docx, xlsx, png, jpg, jusqu'à 20 Mo.
 
+Une ressource n'est pas toujours un fichier : un **lien** (Google Doc, présentation en
+ligne, site, vidéo) s'ajoute au même endroit, dans le second onglet, et reste à jour tout
+seul au lieu d'une copie figée. Les PDF et les images s'ouvrent dans le navigateur, et le
+bouton voisin force le téléchargement quand on veut le fichier sur son poste.
+
 ### Correspondance entreprises et investisseurs
 
 Le score est explicable, ligne par ligne, et affiché comme tel aux deux parties :
@@ -253,5 +258,9 @@ anti-CSRF. Il se termine par `PARCOURS COMPLET OK`.
     app/mailer.py      envoi SMTP, ou journal quand rien n'est configuré
     app/templates/     gabarits Jinja, une page par écran
     app/static/        une feuille de style, aucune dépendance front
+    app/templates/_icones.html  le sprite d'icônes, fabriqué par build_icones.py
+    build_icones.py    assemble les icônes Lucide embarquées, sans appel à une CDN
+    captures.py        captures d'écran de l'instance d'essai
+    build_apercu.py    l'aperçu PDF, une page par écran
     seed_demo.py       jeu de démonstration
     tests_parcours.py  recette de bout en bout

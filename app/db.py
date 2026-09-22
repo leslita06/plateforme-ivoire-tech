@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS documents (
   nom TEXT NOT NULL,
   categorie TEXT NOT NULL,            -- deck | business_plan | etats_financiers | statuts | autre
   version INTEGER NOT NULL DEFAULT 1,
-  fichier TEXT NOT NULL,              -- chemin relatif sous uploads/
+  fichier TEXT NOT NULL DEFAULT '',   -- chemin relatif sous uploads/ (vide pour un lien)
+  lien TEXT NOT NULL DEFAULT '',      -- adresse web, quand la ressource n'est pas un fichier déposé
   taille INTEGER NOT NULL,
   depose_par TEXT REFERENCES utilisateurs(id),
   visibilite TEXT NOT NULL DEFAULT 'prive',   -- prive | investisseurs | partenaires | tous
@@ -119,9 +120,18 @@ def connexion():
     return c
 
 
+# Colonnes ajoutées après coup : une base déjà en service ne se recrée pas, et
+# `CREATE TABLE IF NOT EXISTS` ne la fait pas évoluer.
+MIGRATIONS = [("documents", "lien", "TEXT NOT NULL DEFAULT ''")]
+
+
 def initialiser():
     c = connexion()
     c.executescript(SCHEMA)
+    for (table, colonne, definition) in MIGRATIONS:
+        presentes = [r["name"] for r in c.execute("PRAGMA table_info(%s)" % table)]
+        if colonne not in presentes:
+            c.execute("ALTER TABLE %s ADD COLUMN %s %s" % (table, colonne, definition))
     c.commit()
     c.close()
 

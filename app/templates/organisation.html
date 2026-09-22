@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block titre %}Mon organisation · {{ NOM }}{% endblock %}
 {% block contenu %}
-<h1>Mon organisation</h1>
+<h1>{{ ic('organisation', 'titre') }}Mon organisation</h1>
 <p class="muted">{{ libelle(org.type, TYPES_ORG) }} · cette fiche est visible des autres membres validés de la plateforme.</p>
 {% if erreur %}<div class="flash erreur">{{ erreur }}</div>{% endif %}
 <form method="post" action="/organisation" class="formulaire">

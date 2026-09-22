@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block titre %}Créer un compte · {{ NOM }}{% endblock %}
 {% block contenu %}
-<h1>Créer un compte</h1>
+<h1>{{ ic('inscription', 'titre') }}Créer un compte</h1>
 <p class="muted">Le compte est créé tout de suite ; l'organisation est ensuite validée par l'administration de la plateforme avant d'accéder au matching et aux offres.</p>
 {% for e in erreurs or [] %}<div class="flash erreur">{{ e }}</div>{% endfor %}
 <form method="post" action="/inscription" class="formulaire">

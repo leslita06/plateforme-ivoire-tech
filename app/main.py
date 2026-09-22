@@ -44,6 +44,25 @@ templates.env.globals.update(
     PROGRAMMES=PROGRAMMES, CATEGORIES_OFFRES=CATEGORIES_OFFRES, CATEGORIES_DOCS=CATEGORIES_DOCS,
     libelle=libelle, liste=liste, dict=dict,
 )
+def ic(nom, classe=""):
+    """Une icône du sprite `_icones.html`. Jamais un glyphe unicode à la place d'une icône."""
+    from markupsafe import Markup
+    return Markup('<svg class="ic %s" aria-hidden="true"><use href="#ic-%s"></use></svg>' % (classe, nom))
+
+
+EXTENSION_ICONE = {".pdf": "pdf", ".png": "image", ".jpg": "image", ".jpeg": "image",
+                   ".xlsx": "tableur", ".pptx": "presentation", ".docx": "pdf"}
+APERCU_DANS_LE_NAVIGATEUR = {".pdf": "application/pdf", ".png": "image/png",
+                             ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
+
+
+def icone_document(d):
+    if d["lien"]:
+        return "lien"
+    return EXTENSION_ICONE.get(os.path.splitext(d["fichier"])[1].lower(), "pdf")
+
+
+templates.env.globals.update(ic=ic, icone_document=icone_document)
 templates.env.filters["libelle"] = libelle
 templates.env.filters["jour"] = lambda v: ("%s/%s/%s" % (v[8:10], v[5:7], v[0:4])) if v and len(v) == 10 and v[4] == "-" else (v or "")
 templates.env.filters["statut"] = lambda v: STATUTS.get(v, (v or "").replace("_", " "))
@@ -364,6 +383,29 @@ def documents(request: Request):
     return page(request, "documents.html", docs=docs)
 
 
+@app.post("/documents/lien")
+def deposer_lien(request: Request, lien: str = Form(...), nom: str = Form(""),
+                 categorie: str = Form("autre"), visibilite: str = Form("prive"), csrf: str = Form("")):
+    """Une ressource n'est pas toujours un fichier : un Google Doc, un Slides, un site se
+    partagent par leur adresse, et la recopier en PDF ferait vivre une version périmée."""
+    u, org, s = exiger(request)
+    verifier_csrf(s, csrf)
+    lien = (lien or "").strip()
+    if not re.match(r"^https?://[^\s]+\.[^\s]+", lien):
+        return rediriger("/documents", "lien_invalide")
+    nom = (nom or lien.split("//", 1)[-1].split("/")[0]).strip()[:120]
+    categorie = categorie if categorie in dict(CATEGORIES_DOCS) else "autre"
+    visibilite = visibilite if visibilite in ("prive", "investisseurs", "partenaires", "tous") else "prive"
+    c = db.connexion()
+    prec = c.execute("SELECT MAX(version) FROM documents WHERE org_id = ? AND nom = ?", (org["id"], nom)).fetchone()[0] or 0
+    c.execute("INSERT INTO documents (id, org_id, nom, categorie, version, fichier, lien, taille, depose_par, visibilite, created_at) "
+              "VALUES (?, ?, ?, ?, ?, '', ?, 0, ?, ?, ?)",
+              (db.nouvel_id(), org["id"], nom, categorie, prec + 1, lien, u["id"], visibilite, db.maintenant()))
+    db.journaliser(c, u["email"], "lien_ajoute", "%s v%d" % (nom, prec + 1))
+    c.commit(); c.close()
+    return rediriger("/documents", "lien_ajoute")
+
+
 @app.post("/documents/deposer")
 async def deposer(request: Request, fichier: UploadFile = File(...), nom: str = Form(""), categorie: str = Form("autre"),
                   visibilite: str = Form("prive"), csrf: str = Form("")):
@@ -395,7 +437,7 @@ async def deposer(request: Request, fichier: UploadFile = File(...), nom: str = 
 
 
 @app.get("/documents/{doc_id}/telecharger")
-def telecharger(request: Request, doc_id: str):
+def telecharger(request: Request, doc_id: str, forcer: int = 0):
     u, org, s = exiger(request)
     c = db.connexion()
     d = c.execute("SELECT * FROM documents WHERE id = ?", (doc_id,)).fetchone()
@@ -407,8 +449,17 @@ def telecharger(request: Request, doc_id: str):
                 or (org and d["visibilite"] == "partenaires" and org["type"] == "partenaire" and org["statut"] == "validee"))
     if not autorise:
         raise HTTPException(403, "Ce document ne vous est pas ouvert")
+    if d["lien"]:
+        return RedirectResponse(d["lien"], status_code=303)
     chemin = os.path.join(db.UPLOADS, d["fichier"])
-    return FileResponse(chemin, filename="%s_v%d%s" % (d["nom"], d["version"], os.path.splitext(chemin)[1]))
+    ext = os.path.splitext(chemin)[1].lower()
+    nom_fichier = "%s_v%d%s" % (d["nom"], d["version"], ext)
+    # un PDF ou une image s'ouvre DANS le navigateur : forcer le téléchargement pour
+    # regarder une pièce oblige à la sortir du poste, puis à la retrouver
+    if ext in APERCU_DANS_LE_NAVIGATEUR and not forcer:
+        return FileResponse(chemin, media_type=APERCU_DANS_LE_NAVIGATEUR[ext],
+                            headers={"Content-Disposition": 'inline; filename="%s"' % nom_fichier})
+    return FileResponse(chemin, filename=nom_fichier)
 
 
 @app.post("/documents/{doc_id}/supprimer")
@@ -418,10 +469,11 @@ def supprimer_doc(request: Request, doc_id: str, csrf: str = Form("")):
     c = db.connexion()
     d = c.execute("SELECT * FROM documents WHERE id = ? AND org_id = ?", (doc_id, org["id"] if org else "")).fetchone()
     if d:
-        try:
-            os.remove(os.path.join(db.UPLOADS, d["fichier"]))
-        except OSError:
-            pass
+        if d["fichier"]:
+            try:
+                os.remove(os.path.join(db.UPLOADS, d["fichier"]))
+            except OSError:
+                pass
         c.execute("DELETE FROM documents WHERE id = ?", (doc_id,))
         db.journaliser(c, u["email"], "document_supprime", "%s v%d" % (d["nom"], d["version"]))
         c.commit()

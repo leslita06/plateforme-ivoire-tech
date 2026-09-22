@@ -7,29 +7,31 @@
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+{% include "_icones.html" %}
 <header class="entete">
   <a class="marque" href="/">
     <span class="marque-pastille">IT</span>
     <span><strong>{{ NOM }}</strong><small>Ministère de la Transition Numérique et de l'Innovation Technologique</small></span>
   </a>
+  {% set chemin = request.url.path %}
   <nav class="nav">
     {% if u %}
       {% if u.role == 'admin' %}
-        <a href="/admin">Administration</a>
-        <a href="/annuaire">Annuaire</a>
-        <a href="/offres">Offres</a>
+        <a href="/admin" class="{{ 'actif' if chemin.startswith('/admin') }}">{{ ic('administration') }}Administration</a>
+        <a href="/annuaire" class="{{ 'actif' if chemin.startswith('/annuaire') }}">{{ ic('annuaire') }}Annuaire</a>
+        <a href="/offres" class="{{ 'actif' if chemin.startswith('/offres') }}">{{ ic('offres') }}Offres</a>
       {% else %}
-        <a href="/tableau">Tableau de bord</a>
-        <a href="/organisation">Mon organisation</a>
-        <a href="/documents">Documents</a>
-        <a href="/offres">Offres</a>
-        {% if org and org.type in ('startup', 'pme', 'investisseur') %}<a href="/matching">Matching</a>{% endif %}
-        <a href="/annuaire">Annuaire</a>
+        <a href="/tableau" class="{{ 'actif' if chemin.startswith('/tableau') }}">{{ ic('tableau') }}Tableau de bord</a>
+        <a href="/organisation" class="{{ 'actif' if chemin.startswith('/organisation') }}">{{ ic('organisation') }}Mon organisation</a>
+        <a href="/documents" class="{{ 'actif' if chemin.startswith('/documents') }}">{{ ic('documents') }}Documents</a>
+        <a href="/offres" class="{{ 'actif' if chemin.startswith('/offres') }}">{{ ic('offres') }}Offres</a>
+        {% if org and org.type in ('startup', 'pme', 'investisseur') %}<a href="/matching" class="{{ 'actif' if chemin.startswith('/matching') }}">{{ ic('matching') }}Matching</a>{% endif %}
+        <a href="/annuaire" class="{{ 'actif' if chemin.startswith('/annuaire') }}">{{ ic('annuaire') }}Annuaire</a>
       {% endif %}
-      <form method="post" action="/deconnexion" class="inline"><button class="lien">Déconnexion</button></form>
+      <form method="post" action="/deconnexion" class="inline"><button class="lien">{{ ic('deconnexion') }}Déconnexion</button></form>
     {% else %}
-      <a href="/connexion">Connexion</a>
-      <a class="btn" href="/inscription">Créer un compte</a>
+      <a href="/connexion">{{ ic('connexion') }}Connexion</a>
+      <a class="btn" href="/inscription">{{ ic('inscription') }}Créer un compte</a>
     {% endif %}
   </nav>
 </header>
@@ -42,6 +44,8 @@
   'mdp_change': ('ok', "Mot de passe modifié, vous pouvez vous connecter."),
   'enregistre': ('ok', "Enregistré."),
   'depose': ('ok', "Document déposé."),
+  'lien_ajoute': ('ok', "Lien ajouté."),
+  'lien_invalide': ('erreur', "Adresse invalide : un lien commence par http:// ou https://."),
   'supprime': ('ok', "Document supprimé."),
   'format_refuse': ('erreur', "Format refusé : PDF, PPTX, DOCX, XLSX, PNG ou JPG."),
   'trop_gros': ('erreur', "Fichier trop volumineux : 20 Mo au plus."),

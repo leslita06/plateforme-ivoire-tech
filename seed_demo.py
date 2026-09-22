@@ -80,6 +80,13 @@ UTILISATEURS = [
 ]
 
 
+# (organisation, nom, catégorie, visibilité, adresse) : une ressource qui vit ailleurs
+LIENS = [
+    ("Jèko", "Business plan, version vivante", "business_plan", "investisseurs",
+     "https://docs.google.com/spreadsheets/d/exemple-business-plan-jeko/edit"),
+    ("Flot", "Démonstration vidéo", "autre", "tous", "https://flot.africa"),
+]
+
 # (organisation, nom du document, catégorie, visibilité, nombre de versions)
 DOCUMENTS = [
     ("Jèko", "Présentation investisseurs", "deck", "investisseurs", 2),
@@ -154,6 +161,10 @@ def main():
             c.execute("INSERT INTO documents (id, org_id, nom, categorie, version, fichier, taille, depose_par, visibilite, created_at) "
                       "VALUES (?,?,?,?,?,?,?,?,?,?)",
                       (did, ids[orgnom], nom, cat, v, relatif, len(PDF_FACTICE), membres.get(orgnom), vis, db.maintenant()))
+    for (orgnom, nom, cat, vis, adresse) in LIENS:
+        c.execute("INSERT INTO documents (id, org_id, nom, categorie, version, fichier, lien, taille, depose_par, visibilite, created_at) "
+                  "VALUES (?,?,?,?,1,'',?,0,?,?,?)",
+                  (db.nouvel_id(), ids[orgnom], nom, cat, adresse, membres.get(orgnom), vis, db.maintenant()))
     offres_par_titre = {r["titre"]: r["id"] for r in c.execute("SELECT id, titre FROM offres")}
     for (orgnom, titre, statut, message) in DEMANDES:
         c.execute("INSERT INTO demandes_offre (id, offre_id, org_id, message, statut, created_at) VALUES (?,?,?,?,?,?)",
@@ -169,8 +180,8 @@ def main():
                "Place de marché de matériaux de construction, en attente de validation.", db.maintenant()))
     db.journaliser(c, "seed", "jeu_de_demonstration", "%d organisations, %d comptes, %d offres" % (len(ORGS) + 1, len(UTILISATEURS), len(OFFRES)))
     c.commit(); c.close()
-    print("OK : %d organisations, %d comptes (mot de passe %s), %d offres, %d documents, %d demandes, %d relations"
-          % (len(ORGS) + 1, len(UTILISATEURS), MDP, len(OFFRES), sum(d[4] for d in DOCUMENTS), len(DEMANDES), len(RELATIONS)))
+    print("OK : %d organisations, %d comptes (mot de passe %s), %d offres, %d documents, %d liens, %d demandes, %d relations"
+          % (len(ORGS) + 1, len(UTILISATEURS), MDP, len(OFFRES), sum(d[4] for d in DOCUMENTS), len(LIENS), len(DEMANDES), len(RELATIONS)))
 
 
 if __name__ == "__main__":

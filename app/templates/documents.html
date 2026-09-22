@@ -1,36 +1,83 @@
 {% extends "base.html" %}
 {% block titre %}Documents · {{ NOM }}{% endblock %}
 {% block contenu %}
-<h1>Documents</h1>
-<p class="muted">Déposer un fichier sous un nom déjà présent crée une nouvelle version ; les anciennes restent téléchargeables. PDF, PPTX, DOCX, XLSX, PNG ou JPG, 20 Mo au plus.</p>
-<div class="carte">
-<form method="post" action="/documents/deposer" enctype="multipart/form-data" class="formulaire">
-  <input type="hidden" name="csrf" value="{{ csrf }}">
-  <div class="grille deux">
-    <div><label>Fichier</label><input type="file" name="fichier" required></div>
-    <div><label>Nom du document</label><input type="text" name="nom" placeholder="Présentation investisseurs" maxlength="120"><div class="aide">Vide : le nom du fichier est repris.</div></div>
+<h1>{{ ic('documents', 'titre') }}Documents</h1>
+<p class="muted">Tout ce que vous déposez ici alimente votre fiche : les partenaires et les investisseurs ne voient que ce que vous leur ouvrez. Un document redéposé sous le même nom crée une nouvelle version, et les précédentes restent consultables.</p>
+
+{# Onglets en CSS seule (deux boutons radio cachés) : la page doit rester utilisable
+   sans JavaScript, sur une connexion lente comme sur un vieux navigateur. #}
+<div class="onglets-bloc">
+  <input type="radio" name="onglet-depot" id="onglet-fichier" checked>
+  <input type="radio" name="onglet-depot" id="onglet-lien">
+  <div class="onglets">
+    <label for="onglet-fichier">{{ ic('deposer') }}Déposer un fichier</label>
+    <label for="onglet-lien">{{ ic('lien') }}Ajouter un lien</label>
   </div>
-  <div class="grille deux">
-    <div><label>Catégorie</label><select name="categorie">{% for k, lib in CATEGORIES_DOCS %}<option value="{{ k }}">{{ lib }}</option>{% endfor %}</select></div>
-    <div><label>Qui peut le voir</label><select name="visibilite">
-      <option value="prive">Mon organisation et l'administration</option>
-      <option value="investisseurs">Aussi les investisseurs validés</option>
-      <option value="partenaires">Aussi les partenaires validés</option>
-      <option value="tous">Tous les membres validés</option></select></div>
+
+  <div class="carte bloc-fichier">
+  <form method="post" action="/documents/deposer" enctype="multipart/form-data" class="formulaire large">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grille deux">
+      <div><label>Fichier</label><input type="file" name="fichier" required accept=".pdf,.pptx,.docx,.xlsx,.png,.jpg,.jpeg">
+        <div class="aide">PDF, présentation, document, tableur, image. 20 Mo au plus.</div></div>
+      <div><label>Nom du document</label><input type="text" name="nom" placeholder="Présentation investisseurs" maxlength="120"><div class="aide">Vide : le nom du fichier est repris.</div></div>
+    </div>
+    <div class="grille deux">
+      <div><label>Catégorie</label><select name="categorie">{% for k, lib in CATEGORIES_DOCS %}<option value="{{ k }}">{{ lib }}</option>{% endfor %}</select></div>
+      <div><label>Qui peut le voir</label><select name="visibilite">
+        <option value="prive">Mon organisation et l'administration</option>
+        <option value="investisseurs">Aussi les investisseurs validés</option>
+        <option value="partenaires">Aussi les partenaires validés</option>
+        <option value="tous">Tous les membres validés</option></select></div>
+    </div>
+    <div class="actions"><button class="orange">{{ ic('deposer') }}Déposer</button></div>
+  </form>
   </div>
-  <div class="actions"><button class="orange">Déposer</button></div>
-</form>
+
+  <div class="carte bloc-lien">
+  <form method="post" action="/documents/lien" class="formulaire large">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <p class="aide">Pour ce qui vit ailleurs et change : un Google Doc, une présentation en ligne, un site, une vidéo. Le lien reste à jour tout seul, au lieu d'une copie figée.</p>
+    <div class="grille deux">
+      <div><label>Adresse</label><input type="url" name="lien" placeholder="https://docs.google.com/…" required></div>
+      <div><label>Nom</label><input type="text" name="nom" placeholder="Business plan, version vivante" maxlength="120"></div>
+    </div>
+    <div class="grille deux">
+      <div><label>Catégorie</label><select name="categorie">{% for k, lib in CATEGORIES_DOCS %}<option value="{{ k }}">{{ lib }}</option>{% endfor %}</select></div>
+      <div><label>Qui peut le voir</label><select name="visibilite">
+        <option value="prive">Mon organisation et l'administration</option>
+        <option value="investisseurs">Aussi les investisseurs validés</option>
+        <option value="partenaires">Aussi les partenaires validés</option>
+        <option value="tous">Tous les membres validés</option></select></div>
+    </div>
+    <div class="actions"><button class="orange">{{ ic('ajouter') }}Ajouter le lien</button></div>
+  </form>
+  </div>
 </div>
+
 <h2>Mes documents</h2>
 {% if docs %}
-<table><tr><th>Document</th><th>Catégorie</th><th>Version</th><th>Déposé</th><th>Visibilité</th><th></th></tr>
+<table><tr><th>Document</th><th>Catégorie</th><th>Version</th><th>Déposé</th><th>Qui le voit</th><th></th></tr>
 {% for d in docs %}<tr>
-  <td><a href="/documents/{{ d.id }}/telecharger">{{ d.nom }}</a> <small>{{ (d.taille / 1024) | round | int }} Ko</small></td>
+  <td class="avec-icone">{{ ic(icone_document(d), 'doc') }}
+    <span><a href="/documents/{{ d.id }}/telecharger" {% if d.lien %}target="_blank" rel="noopener"{% endif %}>{{ d.nom }}</a>
+    {% if d.lien %}<br><small class="muted">{{ d.lien[:58] }}{% if d.lien|length > 58 %}…{% endif %}</small>
+    {% else %}<small>{{ (d.taille / 1024) | round | int }} Ko</small>{% endif %}</span></td>
   <td>{{ libelle(d.categorie, CATEGORIES_DOCS) }}</td><td>v{{ d.version }}</td>
   <td>{{ d.created_at|date }}<br><small>{{ d.prenom }} {{ d.nom_deposant }}</small></td>
-  <td>{{ {'prive':'privé','investisseurs':'investisseurs','partenaires':'partenaires','tous':'tous les membres'}[d.visibilite] }}</td>
-  <td><form method="post" action="/documents/{{ d.id }}/supprimer" class="inline" onsubmit="return confirm('Supprimer cette version ?')"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="petit secondaire">Supprimer</button></form></td>
+  <td><span class="etiquette {{ 'gris' if d.visibilite == 'prive' else 'vert' }}">{{ {'prive':'privé','investisseurs':'investisseurs','partenaires':'partenaires','tous':'tous les membres'}[d.visibilite] }}</span></td>
+  <td class="actions-table">
+    {% if d.lien %}<a class="bouton petit secondaire" href="{{ d.lien }}" target="_blank" rel="noopener">{{ ic('ouvrir') }}Ouvrir</a>
+    {% else %}<a class="bouton petit secondaire" href="/documents/{{ d.id }}/telecharger">{{ ic('voir') }}Voir</a>
+    <a class="bouton petit secondaire" href="/documents/{{ d.id }}/telecharger?forcer=1" title="Télécharger">{{ ic('telecharger') }}</a>{% endif %}
+    <form method="post" action="/documents/{{ d.id }}/supprimer" class="inline" onsubmit="return confirm('Supprimer cette version ?')"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="petit secondaire" title="Supprimer">{{ ic('supprimer') }}</button></form>
+  </td>
 </tr>{% endfor %}
 </table>
-{% else %}<p class="muted">Aucun document déposé.</p>{% endif %}
+{% else %}
+<div class="carte vide">{{ ic('documents', 'grande') }}
+  <p><strong>Aucun document pour l'instant.</strong></p>
+  <p class="muted">Commencez par votre présentation : c'est la première pièce que regarde un investisseur.</p>
+</div>
+{% endif %}
 {% endblock %}

@@ -5,6 +5,50 @@
 <p class="muted">{{ libelle(org.type, TYPES_ORG) }}{% if org.programme %} · {{ libelle(org.programme, PROGRAMMES) }}{% endif %} ·
   {% if org.statut == 'validee' %}<span class="etiquette vert">validée</span>{% elif org.statut == 'en_attente' %}<span class="etiquette orange">en attente de validation</span>{% else %}<span class="etiquette gris">refusée</span>{% endif %}</p>
 
+{# Le guide de démarrage : à tout moment, l'utilisateur voit où il en est et ce qui
+   lui reste à faire. C'est ce qui rend les menus faciles à suivre. #}
+{% if org.type in ('startup', 'pme') %}
+<h2>{{ ic('tableau', 'titre') }}Par où commencer</h2>
+<div class="etapes">
+  <div class="etape {{ 'faite' if org.description and org.secteurs else 'a-faire' }}">
+    {{ ic('fait' if org.description and org.secteurs else 'attente') }}
+    <div><strong>1. Compléter votre fiche</strong><small>{% if org.description and org.secteurs %}C'est fait.{% else %}<a href="/organisation">Description, secteurs, stade</a> : sans elle, le matching ne peut rien proposer.{% endif %}</small></div>
+  </div>
+  <div class="etape {{ 'faite' if docs else 'a-faire' }}">
+    {{ ic('fait' if docs else 'attente') }}
+    <div><strong>2. Déposer vos documents</strong><small>{% if docs %}{{ docs }} en ligne.{% else %}<a href="/documents">Présentation, business plan, comptes</a>, ou un simple lien.{% endif %}</small></div>
+  </div>
+  <div class="etape {{ 'faite' if demandes else 'a-faire' }}">
+    {{ ic('fait' if demandes else 'attente') }}
+    <div><strong>3. Activer les offres</strong><small>{% if demandes %}{{ demandes|length }} demande(s) envoyée(s).{% else %}<a href="/offres">Banque, cloud, juridique, comptabilité</a> : les avantages négociés pour vous.{% endif %}</small></div>
+  </div>
+  <div class="etape {{ 'faite' if relations else 'a-faire' }}">
+    {{ ic('fait' if relations else 'attente') }}
+    <div><strong>4. Rencontrer les investisseurs</strong><small>{% if relations %}{{ relations|length }} mise(s) en relation.{% else %}<a href="/matching">Les fonds dont la thèse correspond</a> à votre secteur et à votre stade.{% endif %}</small></div>
+  </div>
+</div>
+{% elif org.type == 'partenaire' %}
+<h2>{{ ic('tableau', 'titre') }}Par où commencer</h2>
+<div class="etapes">
+  <div class="etape {{ 'faite' if org.description else 'a-faire' }}">{{ ic('fait' if org.description else 'attente') }}
+    <div><strong>1. Compléter votre fiche</strong><small>{% if org.description %}C'est fait.{% else %}<a href="/organisation">Ce que vous faites</a>, pour que les entreprises vous situent.{% endif %}</small></div></div>
+  <div class="etape {{ 'faite' if mes_offres else 'a-faire' }}">{{ ic('fait' if mes_offres else 'attente') }}
+    <div><strong>2. Publier une offre</strong><small>{% if mes_offres %}{{ mes_offres|length }} offre(s).{% else %}<a href="/offres/nouvelle">Ce que vous ouvrez aux lauréates</a>, avec vos conditions.{% endif %}</small></div></div>
+  <div class="etape {{ 'faite' if demandes else 'a-faire' }}">{{ ic('fait' if demandes else 'attente') }}
+    <div><strong>3. Répondre aux demandes</strong><small>{% if demandes %}{{ demandes|length }} reçue(s).{% else %}Elles arriveront ici dès votre première offre publiée.{% endif %}</small></div></div>
+</div>
+{% elif org.type == 'investisseur' %}
+<h2>{{ ic('tableau', 'titre') }}Par où commencer</h2>
+<div class="etapes">
+  <div class="etape {{ 'faite' if org.secteurs and org.stades_cibles else 'a-faire' }}">{{ ic('fait' if org.secteurs and org.stades_cibles else 'attente') }}
+    <div><strong>1. Déclarer votre thèse</strong><small>{% if org.secteurs and org.stades_cibles %}C'est fait.{% else %}<a href="/organisation">Secteurs, stades, fourchette de ticket</a> : c'est ce qui vous classe les entreprises.{% endif %}</small></div></div>
+  <div class="etape a-faire">{{ ic('attente') }}
+    <div><strong>2. Parcourir les entreprises</strong><small><a href="/matching">Classées par correspondance</a>, avec le détail du score.</small></div></div>
+  <div class="etape {{ 'faite' if relations else 'a-faire' }}">{{ ic('fait' if relations else 'attente') }}
+    <div><strong>3. Accepter les mises en relation</strong><small>{% if relations %}{{ relations|length }} en cours.{% else %}Vous recevez les coordonnées après votre accord.{% endif %}</small></div></div>
+</div>
+{% endif %}
+
 <div class="grille trois">
   <div class="carte"><div class="chiffre">{{ docs }}</div><div>documents déposés · <a href="/documents">gérer</a></div></div>
   {% if org.type in ('startup', 'pme') %}
@@ -23,12 +67,12 @@
 {% endif %}
 
 {% if org.type in ('startup', 'pme') %}
-<h2>Dernières offres des partenaires</h2>
+<h2>{{ ic('offres', 'titre') }}Dernières offres des partenaires</h2>
 {% if offres %}
 <table><tr><th>Offre</th><th>Partenaire</th><th>Catégorie</th><th></th></tr>
 {% for o in offres %}<tr><td><a href="/offres/{{ o.id }}">{{ o.titre }}</a></td><td>{{ o.partenaire }}</td><td>{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</td><td><a href="/offres/{{ o.id }}">Voir</a></td></tr>{% endfor %}
 </table>{% else %}<p class="muted">Aucune offre publiée pour le moment.</p>{% endif %}
-<h2>Mes demandes d'offres</h2>
+<h2>{{ ic('offres', 'titre') }}Mes demandes d'offres</h2>
 {% if demandes %}
 <table><tr><th>Offre</th><th>Date</th><th>Statut</th></tr>
 {% for d in demandes %}<tr><td><a href="/offres/{{ d.offre_id }}">{{ d.titre }}</a></td><td>{{ d.created_at|date }}</td><td><span class="etiquette {% if d.statut == 'acceptee' %}vert{% elif d.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ d.statut|statut }}</span></td></tr>{% endfor %}
@@ -36,12 +80,12 @@
 {% endif %}
 
 {% if org.type == 'partenaire' %}
-<h2>Mes offres</h2>
+<h2>{{ ic('offres', 'titre') }}Mes offres</h2>
 {% if mes_offres %}
 <table><tr><th>Offre</th><th>Catégorie</th><th>Cible</th><th>Statut</th></tr>
 {% for o in mes_offres %}<tr><td><a href="/offres/{{ o.id }}">{{ o.titre }}</a></td><td>{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</td><td>{{ {'startup':'Startups','pme':'PME','toutes':'Toutes'}[o.cible] }}</td><td><span class="etiquette {% if o.statut == 'publiee' %}vert{% elif o.statut == 'archivee' %}gris{% else %}orange{% endif %}">{{ o.statut|statut }}</span></td></tr>{% endfor %}
 </table>{% else %}<p class="muted">Aucune offre. <a href="/offres/nouvelle">Créer la première</a>.</p>{% endif %}
-<h2>Demandes reçues</h2>
+<h2>{{ ic('offres', 'titre') }}Demandes reçues</h2>
 {% if demandes %}
 <table><tr><th>Entreprise</th><th>Offre</th><th>Date</th><th>Statut</th><th></th></tr>
 {% for d in demandes %}<tr><td><a href="/organisations/{{ d.org_id }}">{{ d.entreprise }}</a> <span class="etiquette">{{ libelle(d.type_entreprise, TYPES_ORG) }}</span></td><td><a href="/offres/{{ d.offre_id }}">{{ d.titre }}</a></td><td>{{ d.created_at|date }}</td>
@@ -51,11 +95,11 @@
 {% endif %}
 
 {% if org.type in ('startup', 'pme', 'investisseur') %}
-<h2>Mises en relation</h2>
+<h2>{{ ic('matching', 'titre') }}Mises en relation</h2>
 {% if relations %}
 <table><tr><th>Avec</th><th>Sens</th><th>Date</th><th>Statut</th><th></th></tr>
 {% for r in relations %}<tr><td><a href="/organisations/{{ r.vers_org if r.de_org == org.id else r.de_org }}">{{ r.autre }}</a></td><td>{{ 'envoyée' if r.de_org == org.id else 'reçue' }}</td><td>{{ r.created_at|date }}</td>
-  <td><span class="etiquette {% if r.statut == 'acceptee' %}vert{% elif r.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ r.statut|replace('_', ' ') }}</span></td>
+  <td><span class="etiquette {% if r.statut == 'acceptee' %}vert{% elif r.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ r.statut|statut }}</span></td>
   <td>{% if r.statut == 'en_attente' and r.vers_org == org.id %}<form method="post" action="/relations/{{ r.id }}/repondre" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button name="statut" value="acceptee" class="petit">Accepter</button> <button name="statut" value="refusee" class="petit secondaire">Refuser</button></form>{% endif %}</td></tr>{% endfor %}
 </table>{% else %}<p class="muted">Aucune mise en relation pour le moment. <a href="/matching">Voir les correspondances</a>.</p>{% endif %}
 {% endif %}
