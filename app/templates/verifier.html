@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titre %}Vérifier votre adresse · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Vérifiez votre adresse</h1>
+<p>Un code à six chiffres a été envoyé à <strong>{{ email }}</strong>. Il est valable trente minutes.</p>
+{% if info %}<div class="flash info">{{ info }}</div>{% endif %}
+{% if erreur %}<div class="flash erreur">{{ erreur }}</div>{% endif %}
+{% if code_affiche %}<div class="carte"><div class="muted">Version de démonstration, le code s'affiche ici au lieu de partir par email :</div><div class="code">{{ code_affiche }}</div></div>{% endif %}
+<form method="post" action="/verifier" class="formulaire">
+  <input type="hidden" name="email" value="{{ email }}">
+  <div><label>Code reçu</label><input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" required autofocus></div>
+  <div class="actions"><button class="orange">Valider</button></div>
+</form>
+<form method="post" action="/verifier/renvoyer" class="inline"><input type="hidden" name="email" value="{{ email }}"><button class="lien" style="color:var(--vert3);background:none;padding:0;font-weight:400;text-decoration:underline">Renvoyer un code</button></form>
+{% endblock %}

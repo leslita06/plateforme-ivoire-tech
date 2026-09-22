@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titre %}Mes offres · {{ NOM }}{% endblock %}
+{% block contenu %}
+<div class="actions" style="justify-content:space-between"><h1>Mes offres</h1><a class="bouton orange" href="/offres/nouvelle">Nouvelle offre</a></div>
+<p class="muted">Une offre se crée en brouillon, se publie quand elle est prête, et s'archive quand elle ne vaut plus. Les entreprises la voient publiée, jamais en brouillon.</p>
+{% if offres %}
+<table><tr><th>Offre</th><th>Catégorie</th><th>Cible</th><th>Demandes</th><th>Statut</th><th>Mise à jour</th></tr>
+{% for o in offres %}<tr><td><a href="/offres/{{ o.id }}">{{ o.titre }}</a></td><td>{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</td><td>{{ {'startup':'Startups','pme':'PME','toutes':'Toutes'}[o.cible] }}</td><td>{{ o.n_demandes }}</td>
+  <td><span class="etiquette {% if o.statut == 'publiee' %}vert{% elif o.statut == 'archivee' %}gris{% else %}orange{% endif %}">{{ o.statut|statut }}</span></td><td>{{ o.updated_at|date }}</td></tr>{% endfor %}
+</table>
+{% else %}<p class="muted">Aucune offre pour le moment.</p>{% endif %}
+{% endblock %}

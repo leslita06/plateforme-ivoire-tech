@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titre %}Mon organisation · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Mon organisation</h1>
+<p class="muted">{{ libelle(org.type, TYPES_ORG) }} · cette fiche est visible des autres membres validés de la plateforme.</p>
+{% if erreur %}<div class="flash erreur">{{ erreur }}</div>{% endif %}
+<form method="post" action="/organisation" class="formulaire">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div><label>Nom</label><input type="text" name="nom" value="{{ org.nom }}" required></div>
+  <div><label>Description</label><textarea name="description" placeholder="Ce que vous faites, pour qui, où vous en êtes.">{{ org.description }}</textarea></div>
+  <div class="grille deux">
+    <div><label>Site web</label><input type="url" name="site" value="{{ org.site }}" placeholder="https://"></div>
+    <div><label>Ville</label><input type="text" name="ville" value="{{ org.ville }}"></div>
+  </div>
+  {% if org.type in ('startup', 'pme') %}
+  <div class="grille deux">
+    <div><label>Programme</label><select name="programme">{% for k, lib in PROGRAMMES %}<option value="{{ k }}" {% if org.programme == k %}selected{% endif %}>{{ lib }}</option>{% endfor %}</select></div>
+    <div><label>Effectif</label><input type="text" name="effectif" value="{{ org.effectif }}" placeholder="12 personnes"></div>
+  </div>
+  <div><label>Stade</label><select name="stade"><option value="">Choisir…</option>{% for k, lib in STADES %}<option value="{{ k }}" {% if org.stade == k %}selected{% endif %}>{{ lib }}</option>{% endfor %}</select></div>
+  <div><label>Besoin de financement en cours, en millions de FCFA</label><input type="number" name="besoin_financement" value="{{ org.besoin_financement or '' }}" min="0" placeholder="0 si aucune levée en cours"></div>
+  {% endif %}
+  <div><label>Secteurs{% if org.type == 'investisseur' %} d'investissement{% elif org.type == 'partenaire' %} servis{% endif %}</label>
+    <div class="cases">{% for s in SECTEURS %}<label><input type="checkbox" name="secteurs" value="{{ s }}" {% if s in liste(org.secteurs) %}checked{% endif %}> {{ s }}</label>{% endfor %}</div></div>
+  {% if org.type == 'investisseur' %}
+  <div><label>Stades recherchés</label>
+    <div class="cases">{% for k, lib in STADES %}<label><input type="checkbox" name="stades_cibles" value="{{ k }}" {% if k in liste(org.stades_cibles) %}checked{% endif %}> {{ lib }}</label>{% endfor %}</div></div>
+  <div class="grille deux">
+    <div><label>Ticket minimum, millions de FCFA</label><input type="number" name="ticket_min" value="{{ org.ticket_min or '' }}" min="0"></div>
+    <div><label>Ticket maximum, millions de FCFA</label><input type="number" name="ticket_max" value="{{ org.ticket_max or '' }}" min="0"></div>
+  </div>
+  {% endif %}
+  <div class="actions"><button class="orange">Enregistrer</button></div>
+</form>
+{% endblock %}

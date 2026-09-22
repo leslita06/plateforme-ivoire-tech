@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block titre %}{{ NOM }}{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="entete">
+  <a class="marque" href="/">
+    <span class="marque-pastille">IT</span>
+    <span><strong>{{ NOM }}</strong><small>Ministère de la Transition Numérique et de l'Innovation Technologique</small></span>
+  </a>
+  <nav class="nav">
+    {% if u %}
+      {% if u.role == 'admin' %}
+        <a href="/admin">Administration</a>
+        <a href="/annuaire">Annuaire</a>
+        <a href="/offres">Offres</a>
+      {% else %}
+        <a href="/tableau">Tableau de bord</a>
+        <a href="/organisation">Mon organisation</a>
+        <a href="/documents">Documents</a>
+        <a href="/offres">Offres</a>
+        {% if org and org.type in ('startup', 'pme', 'investisseur') %}<a href="/matching">Matching</a>{% endif %}
+        <a href="/annuaire">Annuaire</a>
+      {% endif %}
+      <form method="post" action="/deconnexion" class="inline"><button class="lien">Déconnexion</button></form>
+    {% else %}
+      <a href="/connexion">Connexion</a>
+      <a class="btn" href="/inscription">Créer un compte</a>
+    {% endif %}
+  </nav>
+</header>
+{% if PREVIEW %}<div class="bandeau-preview">Version de démonstration : les données sont fictives et peuvent être remises à zéro. Les emails ne partent pas, les codes s'affichent à l'écran.</div>{% endif %}
+<main class="page">
+{% set MESSAGES = {
+  'bienvenue': ('ok', "Votre adresse est vérifiée, bienvenue."),
+  'deconnecte': ('info', "Vous êtes déconnecté."),
+  'connexion_requise': ('info', "Connectez-vous pour continuer."),
+  'mdp_change': ('ok', "Mot de passe modifié, vous pouvez vous connecter."),
+  'enregistre': ('ok', "Enregistré."),
+  'depose': ('ok', "Document déposé."),
+  'supprime': ('ok', "Document supprimé."),
+  'format_refuse': ('erreur', "Format refusé : PDF, PPTX, DOCX, XLSX, PNG ou JPG."),
+  'trop_gros': ('erreur', "Fichier trop volumineux : 20 Mo au plus."),
+  'cree': ('ok', "Offre créée en brouillon. Publiez-la quand elle est prête."),
+  'publiee': ('ok', "Offre publiée : elle est visible des entreprises."),
+  'brouillon': ('info', "Offre repassée en brouillon."),
+  'archivee': ('info', "Offre archivée."),
+  'partenaire_non_valide': ('erreur', "Votre compte partenaire doit être validé par l'administration avant de publier."),
+  'compte_non_valide': ('erreur', "Votre compte doit être validé par l'administration pour cette action."),
+  'demande_envoyee': ('ok', "Demande envoyée au partenaire."),
+  'repondu': ('ok', "Réponse enregistrée."),
+  'relation_envoyee': ('ok', "Demande de mise en relation envoyée."),
+  'statut_change': ('ok', "Statut mis à jour."),
+  'role_change': ('ok', "Rôle mis à jour."),
+} %}
+{% if m and m in MESSAGES %}<div class="flash {{ MESSAGES[m][0] }}">{{ MESSAGES[m][1] }}</div>{% endif %}
+{% if org and org.statut == 'en_attente' and u.role != 'admin' %}
+  <div class="flash info">Votre organisation est en attente de validation par l'administration. Complétez votre fiche et déposez vos documents ; le matching, les demandes d'offres et la publication s'ouvrent à la validation.</div>
+{% elif org and org.statut == 'refusee' %}
+  <div class="flash erreur">Votre organisation n'a pas été validée. Écrivez à l'administration de la plateforme si vous pensez qu'il s'agit d'une erreur.</div>
+{% endif %}
+{% block contenu %}{% endblock %}
+</main>
+<footer class="pied">
+  <span>{{ NOM }} · programmes Ivoire Tech Next 15 et Ivoire Tech Scale Up</span>
+  <span>Une plateforme du Ministère de la Transition Numérique et de l'Innovation Technologique</span>
+</footer>
+</body>
+</html>

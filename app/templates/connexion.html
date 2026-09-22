@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titre %}Connexion · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Connexion</h1>
+{% if erreur %}<div class="flash erreur">{{ erreur }}</div>{% endif %}
+<form method="post" action="/connexion" class="formulaire">
+  <div><label>Email</label><input type="email" name="email" required autofocus></div>
+  <div><label>Mot de passe</label><input type="password" name="mot_de_passe" required></div>
+  <div class="actions"><button class="orange">Se connecter</button><a href="/mot-de-passe-oublie">Mot de passe oublié</a><a href="/inscription">Créer un compte</a></div>
+</form>
+{% endblock %}

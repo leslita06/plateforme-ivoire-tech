@@ -1,0 +1,13 @@
+services:
+  plateforme:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PLATEFORME_DATA: /data
+    volumes:
+      - ./data:/data
+    ports:
+      # L'application écoute en local ; le serveur web du ministère (Nginx, Apache)
+      # termine le HTTPS et relaie vers ce port. Voir README.md.
+      - "127.0.0.1:8000:8000"

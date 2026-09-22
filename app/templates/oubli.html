@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block titre %}Mot de passe oublié · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Mot de passe oublié</h1>
+{% if erreur %}<div class="flash erreur">{{ erreur }}</div>{% endif %}
+{% if etape == 1 %}
+<form method="post" action="/mot-de-passe-oublie" class="formulaire">
+  <div><label>Email du compte</label><input type="email" name="email" required autofocus></div>
+  <div class="actions"><button class="orange">Recevoir un code</button></div>
+</form>
+{% else %}
+<p>Si un compte existe pour <strong>{{ email }}</strong>, un code vient d'y être envoyé.</p>
+{% if code_affiche %}<div class="carte"><div class="muted">Version de démonstration, le code s'affiche ici :</div><div class="code">{{ code_affiche }}</div></div>{% endif %}
+<form method="post" action="/reinitialiser" class="formulaire">
+  <input type="hidden" name="email" value="{{ email }}">
+  <div><label>Code reçu</label><input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" required></div>
+  <div><label>Nouveau mot de passe</label><input type="password" name="mot_de_passe" required minlength="10"><div class="aide">Dix caractères au moins, avec une lettre et un chiffre.</div></div>
+  <div class="actions"><button class="orange">Changer le mot de passe</button></div>
+</form>
+{% endif %}
+{% endblock %}

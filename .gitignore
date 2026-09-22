@@ -1,0 +1,12 @@
+# Données de l'instance : base SQLite, fichiers déposés, journaux. Jamais dans le dépôt.
+data/
+*.sqlite3
+
+# Configuration locale, qui porte la clé de signature
+.env
+
+# Sorties de travail
+captures/
+apercu.pdf
+__pycache__/
+*.pyc

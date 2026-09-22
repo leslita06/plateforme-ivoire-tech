@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titre %}{{ o.nom }} · {{ NOM }}{% endblock %}
+{% block contenu %}
+<div><span class="etiquette">{{ libelle(o.type, TYPES_ORG) }}</span>{% if o.programme %}<span class="etiquette gris">{{ libelle(o.programme, PROGRAMMES) }}</span>{% endif %}{% if o.statut != 'validee' %}<span class="etiquette orange">{{ o.statut|statut }}</span>{% endif %}</div>
+<h1>{{ o.nom }}</h1>
+<p class="muted">{% if o.ville %}{{ o.ville }} · {% endif %}{% if o.site %}<a href="{{ o.site }}" rel="noopener" target="_blank">{{ o.site }}</a>{% endif %}</p>
+<div class="grille deux">
+  <div class="carte"><h3>Présentation</h3><p style="white-space:pre-line">{{ o.description or 'Fiche à compléter.' }}</p>
+    <p><small>{% if o.secteurs %}Secteurs : {{ liste(o.secteurs)|join(', ') }}{% endif %}{% if o.stade %} · {{ libelle(o.stade, STADES) }}{% endif %}{% if o.effectif %} · {{ o.effectif }}{% endif %}</small></p>
+    {% if o.type == 'investisseur' %}<p><small>Stades recherchés : {{ liste(o.stades_cibles)|map('libelle', STADES)|join(', ') if o.stades_cibles else 'non renseignés' }}{% if o.ticket_max %} · tickets de {{ o.ticket_min }} à {{ o.ticket_max }} M FCFA{% endif %}</small></p>{% endif %}
+    {% if o.besoin_financement %}<p><small>Levée en cours : {{ o.besoin_financement }} M FCFA</small></p>{% endif %}
+  </div>
+  <div class="carte"><h3>Contacts</h3>{% for m in membres %}<p>{{ m.prenom }} {{ m.nom }}{% if m.fonction %}, {{ m.fonction }}{% endif %}</p>{% else %}<p class="muted">Aucun membre actif.</p>{% endfor %}
+    <p class="aide">Les adresses email sont transmises aux deux parties quand une mise en relation est acceptée.</p></div>
+</div>
+{% if docs %}
+<h2>Documents ouverts</h2>
+<table><tr><th>Document</th><th>Catégorie</th><th>Version</th><th>Date</th></tr>
+{% for d in docs %}<tr><td><a href="/documents/{{ d.id }}/telecharger">{{ d.nom }}</a></td><td>{{ libelle(d.categorie, CATEGORIES_DOCS) }}</td><td>v{{ d.version }}</td><td>{{ d.created_at|date }}</td></tr>{% endfor %}
+</table>
+{% endif %}
+{% if offres %}
+<h2>Offres publiées</h2>
+<div class="grille deux">{% for x in offres %}<div class="carte"><h3><a href="/offres/{{ x.id }}">{{ x.titre }}</a></h3><p>{{ x.description[:200] }}</p></div>{% endfor %}</div>
+{% endif %}
+{% endblock %}

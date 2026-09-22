@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titre %}Administration · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Administration</h1>
+<div class="grille trois">
+  <div class="carte"><div class="chiffre">{{ stats.startup + stats.pme }}</div><div>entreprises validées ({{ stats.startup }} startups, {{ stats.pme }} PME)</div></div>
+  <div class="carte"><div class="chiffre">{{ stats.partenaire }}</div><div>partenaires validés · {{ stats.offres }} offres publiées</div></div>
+  <div class="carte"><div class="chiffre">{{ stats.investisseur }}</div><div>investisseurs validés · {{ stats.relations }} mises en relation</div></div>
+  <div class="carte"><div class="chiffre">{{ stats.utilisateurs }}</div><div>comptes · {{ stats.documents }} documents · {{ stats.demandes }} demandes d'offres</div></div>
+</div>
+
+<h2>Organisations en attente de validation ({{ attente|length }})</h2>
+{% if attente %}
+<table><tr><th>Organisation</th><th>Type</th><th>Contact</th><th>Créée</th><th></th></tr>
+{% for o in attente %}<tr>
+  <td><a href="/organisations/{{ o.id }}">{{ o.nom }}</a>{% if o.programme %} <span class="etiquette">{{ libelle(o.programme, PROGRAMMES) }}</span>{% endif %}<br><small>{{ o.description[:140] }}</small></td>
+  <td>{{ libelle(o.type, TYPES_ORG) }}</td>
+  <td>{% if o.email %}{{ o.email }} {% if not o.verifie %}<span class="etiquette orange">email non vérifié</span>{% endif %}{% else %}<span class="muted">aucun compte rattaché</span>{% endif %}</td>
+  <td>{{ o.created_at|date }}</td>
+  <td><form method="post" action="/admin/organisations/{{ o.id }}/statut" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button name="statut" value="validee" class="petit">Valider</button> <button name="statut" value="refusee" class="petit secondaire">Refuser</button></form></td>
+</tr>{% endfor %}
+</table>
+{% else %}<p class="muted">Rien en attente.</p>{% endif %}
+
+<h2>Organisations</h2>
+<table><tr><th>Organisation</th><th>Type</th><th>Statut</th><th>Membres</th><th></th></tr>
+{% for o in orgs %}<tr>
+  <td><a href="/organisations/{{ o.id }}">{{ o.nom }}</a></td><td>{{ libelle(o.type, TYPES_ORG) }}</td>
+  <td><span class="etiquette {% if o.statut == 'validee' %}vert{% else %}gris{% endif %}">{{ o.statut|statut }}</span></td><td>{{ o.n_membres }}</td>
+  <td><form method="post" action="/admin/organisations/{{ o.id }}/statut" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}">
+    {% if o.statut == 'validee' %}<button name="statut" value="refusee" class="petit secondaire">Suspendre</button>{% else %}<button name="statut" value="validee" class="petit">Valider</button>{% endif %}</form></td>
+</tr>{% endfor %}
+</table>
+
+<h2>Offres ({{ offres|length }} dernières)</h2>
+<table><tr><th>Offre</th><th>Partenaire</th><th>Statut</th><th>Mise à jour</th><th></th></tr>
+{% for o in offres %}<tr><td><a href="/offres/{{ o.id }}">{{ o.titre }}</a></td><td>{{ o.partenaire }}</td>
+  <td><span class="etiquette {% if o.statut == 'publiee' %}vert{% elif o.statut == 'archivee' %}gris{% else %}orange{% endif %}">{{ o.statut|statut }}</span></td><td>{{ o.updated_at|date }}</td>
+  <td>{% if o.statut == 'publiee' %}<form method="post" action="/offres/{{ o.id }}/statut" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button name="statut" value="archivee" class="petit secondaire">Retirer</button></form>{% endif %}</td></tr>{% endfor %}
+</table>
+
+<h2>Exports</h2>
+<p class="actions">{% for t in ('organisations', 'utilisateurs', 'offres', 'demandes_offre', 'mises_en_relation', 'documents') %}<a class="bouton petit secondaire" href="/admin/export/{{ t }}.csv">{{ t|replace('_', ' ') }}.csv</a>{% endfor %}</p>
+
+<h2>Journal des dernières actions</h2>
+<table><tr><th>Quand</th><th>Qui</th><th>Action</th><th>Détail</th></tr>
+{% for j in journal %}<tr><td><small>{{ j.quand|dateheure }}</small></td><td><small>{{ j.qui }}</small></td><td><small>{{ j.action }}</small></td><td><small>{{ j.detail }}</small></td></tr>{% endfor %}
+</table>
+{% endblock %}

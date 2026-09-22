@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block titre %}Tableau de bord · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>{{ org.nom }}</h1>
+<p class="muted">{{ libelle(org.type, TYPES_ORG) }}{% if org.programme %} · {{ libelle(org.programme, PROGRAMMES) }}{% endif %} ·
+  {% if org.statut == 'validee' %}<span class="etiquette vert">validée</span>{% elif org.statut == 'en_attente' %}<span class="etiquette orange">en attente de validation</span>{% else %}<span class="etiquette gris">refusée</span>{% endif %}</p>
+
+<div class="grille trois">
+  <div class="carte"><div class="chiffre">{{ docs }}</div><div>documents déposés · <a href="/documents">gérer</a></div></div>
+  {% if org.type in ('startup', 'pme') %}
+    <div class="carte"><div class="chiffre">{{ demandes|length }}</div><div>demandes d'offres · <a href="/offres">voir les offres</a></div></div>
+    <div class="carte"><div class="chiffre">{{ relations|length }}</div><div>mises en relation · <a href="/matching">matching</a></div></div>
+  {% elif org.type == 'partenaire' %}
+    <div class="carte"><div class="chiffre">{{ mes_offres|length }}</div><div>offres · <a href="/offres/nouvelle">en créer une</a></div></div>
+    <div class="carte"><div class="chiffre">{{ demandes|selectattr('statut', 'equalto', 'en_attente')|list|length }}</div><div>demandes à traiter</div></div>
+  {% elif org.type == 'investisseur' %}
+    <div class="carte"><div class="chiffre">{{ relations|length }}</div><div>mises en relation · <a href="/matching">matching</a></div></div>
+  {% endif %}
+</div>
+
+{% if not org.description or not org.secteurs %}
+<div class="flash info" style="margin-top:16px">Votre fiche est incomplète (description, secteurs{% if org.type == 'investisseur' %}, thèse d'investissement{% endif %}). <a href="/organisation">La compléter</a> améliore le matching et accélère la validation.</div>
+{% endif %}
+
+{% if org.type in ('startup', 'pme') %}
+<h2>Dernières offres des partenaires</h2>
+{% if offres %}
+<table><tr><th>Offre</th><th>Partenaire</th><th>Catégorie</th><th></th></tr>
+{% for o in offres %}<tr><td><a href="/offres/{{ o.id }}">{{ o.titre }}</a></td><td>{{ o.partenaire }}</td><td>{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</td><td><a href="/offres/{{ o.id }}">Voir</a></td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Aucune offre publiée pour le moment.</p>{% endif %}
+<h2>Mes demandes d'offres</h2>
+{% if demandes %}
+<table><tr><th>Offre</th><th>Date</th><th>Statut</th></tr>
+{% for d in demandes %}<tr><td><a href="/offres/{{ d.offre_id }}">{{ d.titre }}</a></td><td>{{ d.created_at|date }}</td><td><span class="etiquette {% if d.statut == 'acceptee' %}vert{% elif d.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ d.statut|statut }}</span></td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Aucune demande pour le moment.</p>{% endif %}
+{% endif %}
+
+{% if org.type == 'partenaire' %}
+<h2>Mes offres</h2>
+{% if mes_offres %}
+<table><tr><th>Offre</th><th>Catégorie</th><th>Cible</th><th>Statut</th></tr>
+{% for o in mes_offres %}<tr><td><a href="/offres/{{ o.id }}">{{ o.titre }}</a></td><td>{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</td><td>{{ {'startup':'Startups','pme':'PME','toutes':'Toutes'}[o.cible] }}</td><td><span class="etiquette {% if o.statut == 'publiee' %}vert{% elif o.statut == 'archivee' %}gris{% else %}orange{% endif %}">{{ o.statut|statut }}</span></td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Aucune offre. <a href="/offres/nouvelle">Créer la première</a>.</p>{% endif %}
+<h2>Demandes reçues</h2>
+{% if demandes %}
+<table><tr><th>Entreprise</th><th>Offre</th><th>Date</th><th>Statut</th><th></th></tr>
+{% for d in demandes %}<tr><td><a href="/organisations/{{ d.org_id }}">{{ d.entreprise }}</a> <span class="etiquette">{{ libelle(d.type_entreprise, TYPES_ORG) }}</span></td><td><a href="/offres/{{ d.offre_id }}">{{ d.titre }}</a></td><td>{{ d.created_at|date }}</td>
+  <td><span class="etiquette {% if d.statut == 'acceptee' %}vert{% elif d.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ d.statut|statut }}</span></td>
+  <td>{% if d.statut == 'en_attente' %}<form method="post" action="/demandes/{{ d.id }}/repondre" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button name="statut" value="acceptee" class="petit">Accepter</button> <button name="statut" value="refusee" class="petit secondaire">Refuser</button></form>{% endif %}</td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Aucune demande reçue.</p>{% endif %}
+{% endif %}
+
+{% if org.type in ('startup', 'pme', 'investisseur') %}
+<h2>Mises en relation</h2>
+{% if relations %}
+<table><tr><th>Avec</th><th>Sens</th><th>Date</th><th>Statut</th><th></th></tr>
+{% for r in relations %}<tr><td><a href="/organisations/{{ r.vers_org if r.de_org == org.id else r.de_org }}">{{ r.autre }}</a></td><td>{{ 'envoyée' if r.de_org == org.id else 'reçue' }}</td><td>{{ r.created_at|date }}</td>
+  <td><span class="etiquette {% if r.statut == 'acceptee' %}vert{% elif r.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ r.statut|replace('_', ' ') }}</span></td>
+  <td>{% if r.statut == 'en_attente' and r.vers_org == org.id %}<form method="post" action="/relations/{{ r.id }}/repondre" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button name="statut" value="acceptee" class="petit">Accepter</button> <button name="statut" value="refusee" class="petit secondaire">Refuser</button></form>{% endif %}</td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Aucune mise en relation pour le moment. <a href="/matching">Voir les correspondances</a>.</p>{% endif %}
+{% endif %}
+{% endblock %}

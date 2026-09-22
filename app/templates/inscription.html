@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block titre %}Créer un compte · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Créer un compte</h1>
+<p class="muted">Le compte est créé tout de suite ; l'organisation est ensuite validée par l'administration de la plateforme avant d'accéder au matching et aux offres.</p>
+{% for e in erreurs or [] %}<div class="flash erreur">{{ e }}</div>{% endfor %}
+<form method="post" action="/inscription" class="formulaire">
+  <div class="grille deux">
+    <div><label>Prénom</label><input type="text" name="prenom" value="{{ valeurs.prenom or '' }}" required></div>
+    <div><label>Nom</label><input type="text" name="nom" value="{{ valeurs.nom or '' }}" required></div>
+  </div>
+  <div><label>Fonction</label><input type="text" name="fonction" value="{{ valeurs.fonction or '' }}" placeholder="Cofondatrice, Directeur général, Chargé d'investissement…"></div>
+  <div><label>Email professionnel</label><input type="email" name="email" value="{{ valeurs.email or '' }}" required>
+    <div class="aide">Un code de vérification vous est envoyé à cette adresse.</div></div>
+  <div><label>Mot de passe</label><input type="password" name="mot_de_passe" required minlength="10">
+    <div class="aide">Dix caractères au moins, avec une lettre et un chiffre.</div></div>
+  <div><label>Vous représentez</label>
+    <select name="type" required>
+      <option value="">Choisir…</option>
+      {% for k, lib in TYPES_ORG if k != 'administration' %}<option value="{{ k }}" {% if valeurs.type == k %}selected{% endif %}>{{ lib }}</option>{% endfor %}
+    </select></div>
+  <div><label>Nom de l'organisation</label><input type="text" name="org_nom" value="{{ valeurs.org_nom or '' }}" required></div>
+  <div><label>Programme (startups et PME)</label>
+    <select name="programme">
+      {% for k, lib in PROGRAMMES %}<option value="{{ k }}" {% if valeurs.programme == k %}selected{% endif %}>{{ lib }}</option>{% endfor %}
+    </select></div>
+  <div class="actions"><button class="orange">Créer mon compte</button><a href="/connexion">J'ai déjà un compte</a></div>
+</form>
+{% endblock %}

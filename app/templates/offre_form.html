@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block titre %}Nouvelle offre · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Nouvelle offre</h1>
+{% if erreur %}<div class="flash erreur">{{ erreur }}</div>{% endif %}
+<form method="post" action="/offres/nouvelle" class="formulaire">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div><label>Titre</label><input type="text" name="titre" value="{{ offre.titre if offre else '' }}" required placeholder="Douze mois de crédits cloud"></div>
+  <div class="grille deux">
+    <div><label>Catégorie</label><select name="categorie">{% for k, lib in CATEGORIES_OFFRES %}<option value="{{ k }}" {% if offre and offre.categorie == k %}selected{% endif %}>{{ lib }}</option>{% endfor %}</select></div>
+    <div><label>Pour qui</label><select name="cible"><option value="toutes">Startups et PME</option><option value="startup" {% if offre and offre.cible == 'startup' %}selected{% endif %}>Startups Next 15</option><option value="pme" {% if offre and offre.cible == 'pme' %}selected{% endif %}>PME Scale Up</option></select></div>
+  </div>
+  <div><label>Description</label><textarea name="description" required placeholder="Ce que l'entreprise obtient, concrètement.">{{ offre.description if offre else '' }}</textarea></div>
+  <div><label>Conditions</label><textarea name="conditions" placeholder="Éligibilité, durée, plafond, pièces à fournir.">{{ offre.conditions if offre else '' }}</textarea></div>
+  <div><label>Valable jusqu'au</label><input type="date" name="valide_jusqua" value="{{ offre.valide_jusqua if offre else '' }}"></div>
+  <div class="actions"><button class="orange">Créer en brouillon</button><a href="/offres">Annuler</a></div>
+</form>
+{% endblock %}

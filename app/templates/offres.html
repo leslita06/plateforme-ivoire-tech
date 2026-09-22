@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titre %}Offres des partenaires · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Offres des partenaires</h1>
+<p class="muted">Les avantages négociés pour les lauréates des programmes. Une demande part au partenaire, qui accepte ou refuse depuis la plateforme.</p>
+<div class="actions" style="margin-bottom:14px">
+  <a class="bouton petit {% if not categorie %}orange{% else %}secondaire{% endif %}" href="/offres">Toutes</a>
+  {% for k, lib in CATEGORIES_OFFRES %}<a class="bouton petit {% if categorie == k %}orange{% else %}secondaire{% endif %}" href="/offres?categorie={{ k }}">{{ lib }}</a>{% endfor %}
+</div>
+{% if offres %}
+<div class="grille deux">
+{% for o in offres %}
+<div class="carte">
+  <div><span class="etiquette">{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</span><span class="etiquette gris">{{ {'startup':'Startups','pme':'PME','toutes':'Startups et PME'}[o.cible] }}</span>{% if o.id in demandees %}<span class="etiquette vert">demandée</span>{% endif %}</div>
+  <h3><a href="/offres/{{ o.id }}">{{ o.titre }}</a></h3>
+  <p class="muted">par {{ o.partenaire }}{% if o.valide_jusqua %} · jusqu'au {{ o.valide_jusqua|jour }}{% endif %}</p>
+  <p>{{ o.description[:220] }}{% if o.description|length > 220 %}…{% endif %}</p>
+  <a class="bouton petit" href="/offres/{{ o.id }}">Voir l'offre</a>
+</div>
+{% endfor %}
+</div>
+{% else %}<p class="muted">Aucune offre dans cette catégorie pour le moment.</p>{% endif %}
+{% endblock %}

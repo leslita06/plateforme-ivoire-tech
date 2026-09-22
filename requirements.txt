@@ -1,0 +1,5 @@
+# Quatre dépendances, rien d'autre : pas d'ORM, pas de framework front, pas de service tiers.
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+jinja2>=3.1,<4
+python-multipart>=0.0.9,<1

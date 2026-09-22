@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titre %}Documents · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Documents</h1>
+<p class="muted">Déposer un fichier sous un nom déjà présent crée une nouvelle version ; les anciennes restent téléchargeables. PDF, PPTX, DOCX, XLSX, PNG ou JPG, 20 Mo au plus.</p>
+<div class="carte">
+<form method="post" action="/documents/deposer" enctype="multipart/form-data" class="formulaire">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div class="grille deux">
+    <div><label>Fichier</label><input type="file" name="fichier" required></div>
+    <div><label>Nom du document</label><input type="text" name="nom" placeholder="Présentation investisseurs" maxlength="120"><div class="aide">Vide : le nom du fichier est repris.</div></div>
+  </div>
+  <div class="grille deux">
+    <div><label>Catégorie</label><select name="categorie">{% for k, lib in CATEGORIES_DOCS %}<option value="{{ k }}">{{ lib }}</option>{% endfor %}</select></div>
+    <div><label>Qui peut le voir</label><select name="visibilite">
+      <option value="prive">Mon organisation et l'administration</option>
+      <option value="investisseurs">Aussi les investisseurs validés</option>
+      <option value="partenaires">Aussi les partenaires validés</option>
+      <option value="tous">Tous les membres validés</option></select></div>
+  </div>
+  <div class="actions"><button class="orange">Déposer</button></div>
+</form>
+</div>
+<h2>Mes documents</h2>
+{% if docs %}
+<table><tr><th>Document</th><th>Catégorie</th><th>Version</th><th>Déposé</th><th>Visibilité</th><th></th></tr>
+{% for d in docs %}<tr>
+  <td><a href="/documents/{{ d.id }}/telecharger">{{ d.nom }}</a> <small>{{ (d.taille / 1024) | round | int }} Ko</small></td>
+  <td>{{ libelle(d.categorie, CATEGORIES_DOCS) }}</td><td>v{{ d.version }}</td>
+  <td>{{ d.created_at|date }}<br><small>{{ d.prenom }} {{ d.nom_deposant }}</small></td>
+  <td>{{ {'prive':'privé','investisseurs':'investisseurs','partenaires':'partenaires','tous':'tous les membres'}[d.visibilite] }}</td>
+  <td><form method="post" action="/documents/{{ d.id }}/supprimer" class="inline" onsubmit="return confirm('Supprimer cette version ?')"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="petit secondaire">Supprimer</button></form></td>
+</tr>{% endfor %}
+</table>
+{% else %}<p class="muted">Aucun document déposé.</p>{% endif %}
+{% endblock %}

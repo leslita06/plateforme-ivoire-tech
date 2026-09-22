@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titre %}Matching · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Matching</h1>
+{% if org.type == 'investisseur' %}
+<p class="muted">Les entreprises validées, classées par correspondance avec votre thèse : secteurs, stade, fourchette de ticket. Le score est expliqué ligne par ligne.</p>
+{% else %}
+<p class="muted">Les investisseurs validés, classés par correspondance avec votre profil. Une mise en relation part à l'investisseur ; s'il accepte, chacun reçoit les coordonnées de l'autre.</p>
+{% endif %}
+{% if not org.secteurs %}<div class="flash info">Renseignez vos secteurs{% if org.type == 'investisseur' %} et votre thèse{% else %} et votre stade{% endif %} dans <a href="/organisation">votre fiche</a> : sans eux, tous les scores sont à zéro.</div>{% endif %}
+{% if org.statut != 'validee' %}<div class="flash info">Les mises en relation s'ouvrent une fois votre organisation validée.</div>{% endif %}
+{% if classes %}
+<table><tr><th>Score</th><th>{{ 'Entreprise' if org.type == 'investisseur' else 'Investisseur' }}</th><th>Pourquoi</th><th>Mise en relation</th></tr>
+{% for (score, pourquoi), x in classes %}
+<tr>
+  <td><span class="score {% if score < 3 %}faible{% endif %}">{{ score }}</span></td>
+  <td><a href="/organisations/{{ x.id }}"><strong>{{ x.nom }}</strong></a><br><small>{{ liste(x.secteurs)|join(', ') or 'secteurs non renseignés' }}{% if x.stade %} · {{ libelle(x.stade, STADES) }}{% endif %}{% if x.type == 'investisseur' and x.ticket_max %} · tickets {{ x.ticket_min }} à {{ x.ticket_max }} M FCFA{% endif %}{% if x.besoin_financement %} · cherche {{ x.besoin_financement }} M FCFA{% endif %}</small></td>
+  <td><small>{{ pourquoi|join(' · ') or 'aucun point commun renseigné' }}</small></td>
+  <td>{% set r = relations.get(x.id) %}
+    {% if r %}<span class="etiquette {% if r.statut == 'acceptee' %}vert{% elif r.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ r.statut|replace('_', ' ') }}{% if r.de_org != org.id %} (reçue){% endif %}</span>
+    {% elif org.statut == 'validee' %}
+      <details><summary class="bouton petit secondaire" style="cursor:pointer">Proposer</summary>
+      <form method="post" action="/relations/demander" class="formulaire" style="margin-top:8px">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="vers" value="{{ x.id }}">
+        <textarea name="message" placeholder="Deux lignes sur ce que vous cherchez." style="min-height:70px"></textarea>
+        <button class="petit orange">Envoyer</button>
+      </form></details>
+    {% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}<p class="muted">Aucun profil validé à afficher pour le moment.</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block contenu %}
+<section class="hero">
+  <div>
+    <h1>L'espace commun des startups, des PME, des partenaires et des investisseurs d'Ivoire Tech</h1>
+    <p class="chapeau">Les lauréates d'Ivoire Tech Next 15 et d'Ivoire Tech Scale Up y trouvent les offres des partenaires, y déposent leurs documents et y rencontrent les investisseurs qui cherchent leur profil.</p>
+    <div class="actions">
+      <a class="bouton orange" href="/inscription">Créer un compte</a>
+      <a class="bouton secondaire" href="/connexion">Se connecter</a>
+    </div>
+  </div>
+  <div class="grille trois">
+    <div class="carte"><div class="chiffre">{{ n.startup + n.pme }}</div><div>entreprises accompagnées</div></div>
+    <div class="carte"><div class="chiffre">{{ n.partenaire }}</div><div>partenaires</div></div>
+    <div class="carte"><div class="chiffre">{{ n.offres }}</div><div>offres ouvertes</div></div>
+    <div class="carte"><div class="chiffre">{{ n.investisseur }}</div><div>investisseurs</div></div>
+  </div>
+</section>
+
+<h2>Ce que chacun y fait</h2>
+<div class="grille deux">
+  <div class="carte"><h3>Startups et PME</h3>
+    <ul class="liste-simple">
+      <li>Une fiche entreprise : secteur, stade, besoin de financement.</li>
+      <li>Les documents à jour : présentation, business plan, états financiers, avec leurs versions.</li>
+      <li>Les offres des partenaires, réservées aux lauréates, activées en un clic.</li>
+      <li>Les investisseurs dont la thèse correspond, avec une mise en relation à double accord.</li>
+    </ul></div>
+  <div class="carte"><h3>Partenaires</h3>
+    <ul class="liste-simple">
+      <li>Des offres publiées et tenues à jour : cloud, juridique, banque, formation, recrutement.</li>
+      <li>Les demandes des entreprises, acceptées ou refusées depuis la plateforme.</li>
+    </ul></div>
+  <div class="carte"><h3>Investisseurs</h3>
+    <ul class="liste-simple">
+      <li>Une thèse déclarée : secteurs, stades, fourchette de ticket.</li>
+      <li>Les entreprises classées par correspondance, avec l'explication du score.</li>
+      <li>Les documents qu'elles ont choisi d'ouvrir aux investisseurs.</li>
+    </ul></div>
+  <div class="carte"><h3>Le Ministère</h3>
+    <ul class="liste-simple">
+      <li>La validation des comptes, la modération des offres, le journal des actions.</li>
+      <li>Les exports pour le suivi des programmes.</li>
+      <li>Une application autoportante, hébergeable sur les serveurs de l'État.</li>
+    </ul></div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titre %}Annuaire · {{ NOM }}{% endblock %}
+{% block contenu %}
+<h1>Annuaire</h1>
+<div class="actions" style="margin-bottom:14px">
+  <a class="bouton petit {% if not type %}orange{% else %}secondaire{% endif %}" href="/annuaire">Tous</a>
+  {% for k, lib in TYPES_ORG if k != 'administration' %}<a class="bouton petit {% if type == k %}orange{% else %}secondaire{% endif %}" href="/annuaire?type={{ k }}">{{ lib }}s</a>{% endfor %}
+</div>
+{% if orgs %}
+<table><tr><th>Organisation</th><th>Type</th><th>Secteurs</th><th>Ville</th></tr>
+{% for o in orgs %}<tr><td><a href="/organisations/{{ o.id }}">{{ o.nom }}</a>{% if o.programme %} <span class="etiquette">{{ libelle(o.programme, PROGRAMMES) }}</span>{% endif %}</td><td>{{ libelle(o.type, TYPES_ORG) }}</td><td><small>{{ liste(o.secteurs)|join(', ') }}</small></td><td>{{ o.ville }}</td></tr>{% endfor %}
+</table>
+{% else %}<p class="muted">Aucune organisation validée dans cette catégorie.</p>{% endif %}
+{% endblock %}

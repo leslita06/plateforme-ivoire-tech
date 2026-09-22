@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titre %}{{ o.titre }} · {{ NOM }}{% endblock %}
+{% block contenu %}
+<div><span class="etiquette">{{ libelle(o.categorie, CATEGORIES_OFFRES) }}</span><span class="etiquette gris">{{ {'startup':'Startups','pme':'PME','toutes':'Startups et PME'}[o.cible] }}</span>
+  <span class="etiquette {% if o.statut == 'publiee' %}vert{% elif o.statut == 'archivee' %}gris{% else %}orange{% endif %}">{{ o.statut|statut }}</span></div>
+<h1>{{ o.titre }}</h1>
+<p class="muted">par <a href="/organisations/{{ o.org_id }}">{{ o.partenaire }}</a>{% if o.valide_jusqua %} · valable jusqu'au {{ o.valide_jusqua|jour }}{% endif %} · mise à jour le {{ o.updated_at|date }}</p>
+
+<div class="grille deux">
+  <div class="carte"><h3>L'offre</h3><p style="white-space:pre-line">{{ o.description }}</p>
+    {% if o.conditions %}<h3>Conditions</h3><p style="white-space:pre-line">{{ o.conditions }}</p>{% endif %}</div>
+  <div class="carte"><h3>Le partenaire</h3><p>{{ o.desc_partenaire or 'Fiche à compléter.' }}</p>{% if o.site_partenaire %}<p><a href="{{ o.site_partenaire }}" rel="noopener" target="_blank">{{ o.site_partenaire }}</a></p>{% endif %}
+    {% if org and org.type in ('startup', 'pme') and o.statut == 'publiee' %}
+      {% if ma_demande %}
+        <p>Votre demande du {{ ma_demande.created_at|date }} : <span class="etiquette {% if ma_demande.statut == 'acceptee' %}vert{% elif ma_demande.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ ma_demande.statut|replace('_', ' ') }}</span></p>
+      {% elif org.statut == 'validee' %}
+        <form method="post" action="/offres/{{ o.id }}/demander" class="formulaire">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <div><label>Message au partenaire</label><textarea name="message" placeholder="Pourquoi cette offre vous est utile, et quand."></textarea></div>
+          <div class="actions"><button class="orange">Demander cette offre</button></div>
+        </form>
+      {% else %}<p class="muted">Votre compte doit être validé pour demander une offre.</p>{% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% if proprietaire or u.role == 'admin' %}
+<h2>Gérer l'offre</h2>
+<div class="carte">
+<form method="post" action="/offres/{{ o.id }}/statut" class="actions">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% if o.statut != 'publiee' %}<button name="statut" value="publiee">Publier</button>{% endif %}
+  {% if o.statut == 'publiee' %}<button name="statut" value="brouillon" class="secondaire">Repasser en brouillon</button>{% endif %}
+  {% if o.statut != 'archivee' %}<button name="statut" value="archivee" class="secondaire">Archiver</button>{% endif %}
+</form>
+{% if proprietaire %}
+<details style="margin-top:14px"><summary>Modifier le texte</summary>
+<form method="post" action="/offres/{{ o.id }}/modifier" class="formulaire" style="margin-top:10px">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div><label>Titre</label><input type="text" name="titre" value="{{ o.titre }}"></div>
+  <div class="grille deux">
+    <div><label>Catégorie</label><select name="categorie">{% for k, lib in CATEGORIES_OFFRES %}<option value="{{ k }}" {% if o.categorie == k %}selected{% endif %}>{{ lib }}</option>{% endfor %}</select></div>
+    <div><label>Pour qui</label><select name="cible"><option value="toutes" {% if o.cible == 'toutes' %}selected{% endif %}>Startups et PME</option><option value="startup" {% if o.cible == 'startup' %}selected{% endif %}>Startups Next 15</option><option value="pme" {% if o.cible == 'pme' %}selected{% endif %}>PME Scale Up</option></select></div>
+  </div>
+  <div><label>Description</label><textarea name="description">{{ o.description }}</textarea></div>
+  <div><label>Conditions</label><textarea name="conditions">{{ o.conditions }}</textarea></div>
+  <div><label>Valable jusqu'au</label><input type="date" name="valide_jusqua" value="{{ o.valide_jusqua }}"></div>
+  <div class="actions"><button>Enregistrer</button></div>
+</form></details>
+{% endif %}
+</div>
+<h2>Demandes reçues</h2>
+{% if demandes %}
+<table><tr><th>Entreprise</th><th>Message</th><th>Date</th><th>Statut</th><th></th></tr>
+{% for d in demandes %}<tr><td><a href="/organisations/{{ d.org_id }}">{{ d.entreprise }}</a> <span class="etiquette">{{ libelle(d.type_entreprise, TYPES_ORG) }}</span></td><td>{{ d.message }}</td><td>{{ d.created_at|date }}</td>
+  <td><span class="etiquette {% if d.statut == 'acceptee' %}vert{% elif d.statut == 'refusee' %}gris{% else %}orange{% endif %}">{{ d.statut|statut }}</span></td>
+  <td>{% if d.statut == 'en_attente' %}<form method="post" action="/demandes/{{ d.id }}/repondre" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button name="statut" value="acceptee" class="petit">Accepter</button> <button name="statut" value="refusee" class="petit secondaire">Refuser</button></form>{% endif %}</td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Aucune demande pour le moment.</p>{% endif %}
+{% endif %}
+{% endblock %}
