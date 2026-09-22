@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plateforme d'accompagnement Ivoire Tech</title>
+<meta name="description" content="L'espace des lauréates Ivoire Tech Next 15 et Ivoire Tech Scale Up, de leurs partenaires et de leurs investisseurs.">
+<link rel="icon" href="logos/favicon.png">
+<style>
+  :root {
+    --vert: #0a7b4b; --vert-fonce: #075937; --orange: #f07f13;
+    --encre: #16241d; --gris: #5c6b64; --trait: #dfe6e2; --fond: #f6f8f7;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         color: var(--encre); background: #fff; line-height: 1.55; }
+  .marques { background:#fff; border-bottom:1px solid var(--trait); }
+  .marques div { max-width:1080px; margin:0 auto; padding:14px 20px; display:flex;
+                  align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .marques img.ministere { height:42px; }
+  .programmes { display:flex; align-items:center; gap:22px; }
+  .programmes img.next15 { height:26px; }
+  .programmes img.scaleup { height:46px; }
+  header { background: linear-gradient(160deg, var(--vert) 0%, var(--vert-fonce) 100%); color:#fff; }
+  header div { max-width:1080px; margin:0 auto; padding:54px 20px 48px; }
+  h1 { margin:0 0 14px; font-size:2.1rem; line-height:1.2; }
+  .chapo { font-size:1.12rem; max-width:44em; opacity:.95; margin:0 0 28px; }
+  .boutons { display:flex; gap:12px; flex-wrap:wrap; }
+  .bouton { display:inline-block; padding:13px 22px; border-radius:8px; font-weight:600;
+             text-decoration:none; border:2px solid transparent; }
+  .bouton.plein { background:var(--orange); color:#fff; }
+  .bouton.vide { border-color:rgba(255,255,255,.55); color:#fff; }
+  .note { font-size:.88rem; opacity:.85; margin:14px 0 0; }
+  main { max-width:1080px; margin:0 auto; padding:0 20px 60px; }
+  section.intro { padding:46px 0 10px; }
+  h2 { font-size:1.45rem; margin:0 0 10px; }
+  .grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px; margin:26px 0 10px; }
+  .carte { background:var(--fond); border:1px solid var(--trait); border-radius:10px; padding:18px 20px; }
+  .carte h3 { margin:0 0 6px; font-size:1.02rem; }
+  .carte p { margin:0; color:var(--gris); font-size:.95rem; }
+  .ecran { margin:44px 0 0; }
+  .ecran h3 { margin:0 0 4px; font-size:1.2rem; }
+  .ecran p { margin:0 0 14px; color:var(--gris); max-width:52em; }
+  .ecran img { width:100%; border:1px solid var(--trait); border-radius:10px;
+                box-shadow:0 2px 14px rgba(10,60,40,.07); display:block; }
+  footer { border-top:1px solid var(--trait); background:var(--fond); }
+  footer div { max-width:1080px; margin:0 auto; padding:28px 20px 40px; display:flex;
+                align-items:center; gap:26px; flex-wrap:wrap; }
+  footer img { height:34px; }
+  footer img.scaleup { height:40px; }
+  footer p { margin:0; color:var(--gris); font-size:.9rem; }
+  a { color:var(--vert); }
+  @media (max-width:640px) {
+    h1 { font-size:1.6rem; } header div { padding:38px 20px 34px; }
+    .marques img.ministere { height:32px; }
+    .programmes img.next15 { height:19px; } .programmes img.scaleup { height:34px; }
+  }
+</style>
+</head>
+<body>
+<div class="marques"><div>
+  <img class="ministere" src="logos/ministere.png" alt="Ministère de la Transition Numérique et de l'Innovation Technologique">
+  <span class="programmes">
+    <img class="next15" src="logos/next15.png" alt="Ivoire Tech Next 15">
+    <img class="scaleup" src="logos/scaleup.png" alt="Ivoire Tech Scale Up">
+  </span>
+</div></div>
+
+<header><div>
+  <h1>La plateforme d'accompagnement Ivoire Tech</h1>
+  <p class="chapo">L'espace où les startups d'Ivoire Tech Next 15 et les PME d'Ivoire Tech Scale Up
+  retrouvent les offres de leurs partenaires, déposent leurs documents et rencontrent les investisseurs,
+  sous le regard du Ministère.</p>
+  <div class="boutons"><a class="bouton plein" href="https://6c6e9713e944a5.lhr.life">Ouvrir la démonstration</a>
+    <a class="bouton vide" href="https://github.com/leslita06/plateforme-ivoire-tech">Le code et son installation</a></div>
+  <p class="note">La démonstration tourne sur une machine de travail et n'est ouverte que par intermittence. Si le lien ne répond pas, demandez-le et il est rallumé en une minute. Les données qu'elle contient sont fictives.</p>
+</div></header>
+
+<main>
+<section class="intro">
+  <h2>Ce qu'on y fait</h2>
+  <div class="grille">
+    <div class="carte"><h3>Chacun crée son compte</h3><p>Startup, PME, partenaire ou investisseur. Le Ministère valide avant d'ouvrir l'accès.</p></div>
+    <div class="carte"><h3>Les partenaires publient</h3><p>Leurs offres, avec leurs conditions. Les entreprises les demandent en un clic.</p></div>
+    <div class="carte"><h3>Les documents vivent ici</h3><p>Fichiers et liens, versionnés, et l'entreprise choisit qui les voit.</p></div>
+    <div class="carte"><h3>Les investisseurs cherchent</h3><p>Les entreprises leur sont classées par correspondance, avec le score expliqué.</p></div>
+    <div class="carte"><h3>Le Ministère pilote</h3><p>Validation des comptes, modération, journal des actions, export des données.</p></div>
+    <div class="carte"><h3>Hébergeable par l'État</h3><p>Une application autonome, quatre dépendances, une base dans un fichier, une sauvegarde qui tient dans la copie d'un dossier.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2 style="margin-top:46px">Les écrans</h2>
+  <div class="ecran"><h3>L'accueil</h3><p>La porte d'entrée : ce que le programme apporte, et les deux façons d'entrer, créer un compte ou se connecter.</p><img src="ecrans/01-accueil.png" alt="L'accueil" loading="lazy"></div>
+  <div class="ecran"><h3>La création de compte</h3><p>Chacun s'inscrit seul, startup, PME, partenaire ou investisseur. Le Ministère valide avant d'ouvrir l'accès.</p><img src="ecrans/02-inscription.png" alt="La création de compte" loading="lazy"></div>
+  <div class="ecran"><h3>Le tableau de bord d'une lauréate</h3><p>Un guide en quatre étapes, cochées au fur et à mesure, pour qu'une entreprise sache toujours ce qui lui reste à faire.</p><img src="ecrans/03-tableau-startup.png" alt="Le tableau de bord d'une lauréate" loading="lazy"></div>
+  <div class="ecran"><h3>Les offres des partenaires</h3><p>Banque, cloud, juridique, comptabilité : les avantages négociés, demandés en un clic.</p><img src="ecrans/04-offres.png" alt="Les offres des partenaires" loading="lazy"></div>
+  <div class="ecran"><h3>La mise en relation</h3><p>Les investisseurs voient les entreprises classées par correspondance, avec le détail du score.</p><img src="ecrans/05-matching.png" alt="La mise en relation" loading="lazy"></div>
+  <div class="ecran"><h3>Les documents</h3><p>Fichiers et liens, versionnés, avec le choix de qui les voit. Les PDF et les images s'ouvrent dans le navigateur.</p><img src="ecrans/06-documents.png" alt="Les documents" loading="lazy"></div>
+  <div class="ecran"><h3>L'annuaire</h3><p>Qui est dans le programme, avec quoi le contacter, filtré par secteur et par type.</p><img src="ecrans/07-annuaire.png" alt="L'annuaire" loading="lazy"></div>
+  <div class="ecran"><h3>Le côté partenaire</h3><p>Publier une offre, choisir la cible, répondre aux demandes reçues.</p><img src="ecrans/08-offres-partenaire.png" alt="Le côté partenaire" loading="lazy"></div>
+  <div class="ecran"><h3>L'administration du Ministère</h3><p>Valider les comptes, modérer les offres, lire le journal des actions, exporter les données.</p><img src="ecrans/09-administration.png" alt="L'administration du Ministère" loading="lazy"></div>
+</section>
+</main>
+
+<footer><div>
+  <img src="logos/ministere.png" alt="Ministère de la Transition Numérique et de l'Innovation Technologique">
+  <img src="logos/next15.png" alt="Ivoire Tech Next 15">
+  <img class="scaleup" src="logos/scaleup.png" alt="Ivoire Tech Scale Up">
+  <p>Programmes Ivoire Tech Next 15 et Ivoire Tech Scale Up, Ministère de la Transition Numérique et de l'Innovation Technologique.</p>
+</div></footer>
+</body></html>
