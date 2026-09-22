@@ -62,7 +62,14 @@ def icone_document(d):
     return EXTENSION_ICONE.get(os.path.splitext(d["fichier"])[1].lower(), "pdf")
 
 
-templates.env.globals.update(ic=ic, icone_document=icone_document)
+def initiales(nom):
+    """Faute de logo, les initiales de l'organisation : une pastille de couleur vaut
+    mieux qu'un logo inventé ou qu'un glyphe générique."""
+    mots = [m for m in re.split(r"[^0-9A-Za-zÀ-ÿ]+", nom or "") if m]
+    return ("".join(m[0] for m in mots[:2]) or "?").upper()
+
+
+templates.env.globals.update(ic=ic, icone_document=icone_document, initiales=initiales)
 templates.env.filters["libelle"] = libelle
 templates.env.filters["jour"] = lambda v: ("%s/%s/%s" % (v[8:10], v[5:7], v[0:4])) if v and len(v) == 10 and v[4] == "-" else (v or "")
 templates.env.filters["statut"] = lambda v: STATUTS.get(v, (v or "").replace("_", " "))

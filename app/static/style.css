@@ -149,3 +149,58 @@ form.formulaire.large { max-width: none; }
   .marques-programmes img + img { padding-left: 12px; }
   .pied-texte { text-align: left; }
 }
+
+/* ── Annuaire en cartes ─────────────────────────────────────────────────────
+   Une organisation se reconnaît à son logo avant de se lire. Les noms de classe
+   sont préfixés (carte-org, pied-carte) : « carte » et « tete » sont déjà pris
+   plus haut dans cette feuille. */
+.filtres { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 22px; }
+.puce { display: inline-block; padding: 7px 15px; border-radius: 20px; font-size: .9rem;
+        text-decoration: none; border: 1px solid var(--trait); color: var(--gris); background: #fff; }
+.puce:hover { border-color: var(--vert); color: var(--vert); }
+.puce.active { background: var(--vert); border-color: var(--vert); color: #fff; font-weight: 600; }
+.puce.t-startup.active { background: #0a7b4b; border-color: #0a7b4b; }
+.puce.t-pme.active { background: #1f6f8b; border-color: #1f6f8b; }
+.puce.t-partenaire.active { background: #b5651d; border-color: #b5651d; }
+.puce.t-investisseur.active { background: #5b3e8e; border-color: #5b3e8e; }
+
+.cartes-orgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+.carte-org { background: #fff; border: 1px solid var(--trait); border-left: 4px solid var(--vert);
+             border-radius: 10px; padding: 16px 18px 14px; display: flex; flex-direction: column; }
+.carte-org:hover { box-shadow: 0 3px 14px rgba(10, 60, 40, .09); }
+.carte-org.t-pme { border-left-color: #1f6f8b; }
+.carte-org.t-partenaire { border-left-color: #b5651d; }
+.carte-org.t-investisseur { border-left-color: #5b3e8e; }
+.carte-org .tete { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.carte-org h3 { margin: 0; font-size: 1.05rem; line-height: 1.25; }
+.carte-org h3 a { color: var(--encre); text-decoration: none; }
+.carte-org h3 a:hover { color: var(--vert); }
+.carte-org .qui { margin: 2px 0 0; font-size: .85rem; color: var(--gris); }
+.carte-org .resume { margin: 8px 0 10px; font-size: .92rem; color: #3d4b45; }
+.carte-org .secteurs { margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.logo-org { width: 46px; height: 46px; object-fit: contain; border-radius: 8px;
+            border: 1px solid var(--trait); background: #fff; padding: 4px; flex: 0 0 auto; }
+.pastille { width: 46px; height: 46px; border-radius: 8px; flex: 0 0 auto; color: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem; letter-spacing: .5px; }
+.pastille.c0 { background: #0a7b4b; } .pastille.c1 { background: #1f6f8b; }
+.pastille.c2 { background: #b5651d; } .pastille.c3 { background: #5b3e8e; }
+.pastille.c4 { background: #a8324a; } .pastille.c5 { background: #2f6e3f; }
+.tag { display: inline-block; padding: 3px 9px; border-radius: 12px; font-size: .78rem;
+       background: var(--fond-doux, #f1f5f3); color: var(--gris); }
+.pied-carte { margin-top: auto; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px; }
+.pied-carte .bouton { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ── Fiche d'organisation : le logo d'abord, les gens ensuite ─────────────── */
+.tete-fiche { display: flex; align-items: flex-start; gap: 18px; margin: 6px 0 18px; }
+.tete-fiche h1 { margin: 6px 0 2px; }
+.logo-fiche { width: 78px; height: 78px; object-fit: contain; border-radius: 12px;
+              border: 1px solid var(--trait); background: #fff; padding: 7px; flex: 0 0 auto; }
+.pastille.grande-p { width: 78px; height: 78px; border-radius: 12px; font-size: 1.7rem; }
+.pastille.petite-p { width: 34px; height: 34px; border-radius: 17px; font-size: .8rem; }
+.personne { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
+@media (max-width: 720px) {
+  .tete-fiche { gap: 12px; }
+  .logo-fiche, .pastille.grande-p { width: 56px; height: 56px; }
+  .pastille.grande-p { font-size: 1.2rem; }
+}

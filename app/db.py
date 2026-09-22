@@ -122,7 +122,8 @@ def connexion():
 
 # Colonnes ajoutées après coup : une base déjà en service ne se recrée pas, et
 # `CREATE TABLE IF NOT EXISTS` ne la fait pas évoluer.
-MIGRATIONS = [("documents", "lien", "TEXT NOT NULL DEFAULT ''")]
+MIGRATIONS = [("documents", "lien", "TEXT NOT NULL DEFAULT ''"),
+              ("organisations", "logo", "TEXT NOT NULL DEFAULT ''")]
 
 
 def initialiser():

@@ -2,13 +2,36 @@
 {% block titre %}Annuaire · {{ NOM }}{% endblock %}
 {% block contenu %}
 <h1>{{ ic('annuaire', 'titre') }}Annuaire</h1>
-<div class="actions" style="margin-bottom:14px">
-  <a class="bouton petit {% if not type %}orange{% else %}secondaire{% endif %}" href="/annuaire">Tous</a>
-  {% for k, lib in TYPES_ORG if k != 'administration' %}<a class="bouton petit {% if type == k %}orange{% else %}secondaire{% endif %}" href="/annuaire?type={{ k }}">{{ lib }}s</a>{% endfor %}
+<p class="muted">Qui est dans le programme, et comment le joindre. {{ orgs|length }} organisation(s) dans cette vue.</p>
+
+<div class="filtres">
+  <a class="puce {% if not type %}active{% endif %}" href="/annuaire">Toutes</a>
+  {% for k, lib in TYPES_ORG if k != 'administration' %}
+  <a class="puce t-{{ k }} {% if type == k %}active{% endif %}" href="/annuaire?type={{ k }}">{{ lib }}s</a>
+  {% endfor %}
 </div>
+
 {% if orgs %}
-<table><tr><th>Organisation</th><th>Type</th><th>Secteurs</th><th>Ville</th></tr>
-{% for o in orgs %}<tr><td><a href="/organisations/{{ o.id }}">{{ o.nom }}</a>{% if o.programme %} <span class="etiquette">{{ libelle(o.programme, PROGRAMMES) }}</span>{% endif %}</td><td>{{ libelle(o.type, TYPES_ORG) }}</td><td><small>{{ liste(o.secteurs)|join(', ') }}</small></td><td>{{ o.ville }}</td></tr>{% endfor %}
-</table>
+<div class="cartes-orgs">
+{% for o in orgs %}
+  <div class="carte-org t-{{ o.type }}">
+    <div class="tete">
+      {% if o.logo %}<img class="logo-org" src="/static/{{ o.logo }}" alt="{{ o.nom }}">
+      {% else %}<span class="pastille c{{ (o.nom|length) % 6 }}">{{ initiales(o.nom) }}</span>{% endif %}
+      <div>
+        <h3><a href="/organisations/{{ o.id }}">{{ o.nom }}</a></h3>
+        <p class="qui">{{ libelle(o.type, TYPES_ORG) }}{% if o.ville %} · {{ o.ville }}{% endif %}</p>
+      </div>
+    </div>
+    {% if o.programme %}<span class="etiquette {{ 'vert' if o.programme == 'next15' else 'orange' }}">{{ libelle(o.programme, PROGRAMMES) }}</span>{% endif %}
+    {% if o.description %}<p class="resume">{{ o.description[:135] }}{% if o.description|length > 135 %}…{% endif %}</p>{% endif %}
+    {% if liste(o.secteurs) %}<p class="secteurs">{% for s in liste(o.secteurs)[:3] %}<span class="tag">{{ s }}</span>{% endfor %}</p>{% endif %}
+    <div class="pied-carte">
+      <a class="bouton petit orange" href="/organisations/{{ o.id }}">{{ ic('voir') }}La fiche</a>
+      {% if o.site %}<a class="bouton petit secondaire" href="{{ o.site }}" target="_blank" rel="noopener">{{ ic('ouvrir') }}Site</a>{% endif %}
+    </div>
+  </div>
+{% endfor %}
+</div>
 {% else %}<p class="muted">Aucune organisation validée dans cette catégorie.</p>{% endif %}
 {% endblock %}
